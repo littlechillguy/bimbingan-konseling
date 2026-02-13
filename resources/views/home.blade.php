@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tenang.id - Ruang Curhat & Konseling Siswa')
+@section('title', 'Bimbingan Konseling - SMKN 43 JAKARTA')
 
 @section('content')
     <section class="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-32">
