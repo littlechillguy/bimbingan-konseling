@@ -110,19 +110,16 @@
                  class="bg-white p-4 rounded-[2rem] shadow-2xl border border-gray-100 w-64 mb-2">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2 text-center">Chat Guru BK</p>
                 <div class="space-y-2">
-                    <a href="https://wa.me/628123456789" target="_blank" class="flex items-center gap-3 p-3 hover:bg-teal-50 rounded-2xl transition-all group border border-transparent hover:border-teal-100">
+                    <a href="https://wa.me/6283894541627" target="_blank" class="flex items-center gap-3 p-3 hover:bg-teal-50 rounded-2xl transition-all group border border-transparent hover:border-teal-100">
                         <img src="https://ui-avatars.com/api/?name=Ibu+Sari&background=0D9488&color=fff" class="w-10 h-10 rounded-full" alt="">
                         <div>
                             <p class="text-sm font-bold text-gray-800">Ibu Sari, S.Pd</p>
-                            <p class="text-[10px] text-teal-600 font-bold uppercase">Online Sekarang</p>
                         </div>
                     </a>
                     <a href="https://wa.me/628987654321" target="_blank" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-2xl transition-all group border border-transparent hover:border-blue-100">
                         <img src="https://ui-avatars.com/api/?name=Pak+Budi&background=2563EB&color=fff" class="w-10 h-10 rounded-full" alt="">
                         <div>
-                            <p class="text-sm font-bold text-gray-800">Pak Budi, S.Psi</p>
-                            <p class="text-[10px] text-gray-400 font-bold uppercase">Offline</p>
-                        </div>
+                            <p class="text-sm font-bold text-gray-800">Pak Budi, S.Psi</p>                        </div>
                     </a>
                 </div>
             </div>
