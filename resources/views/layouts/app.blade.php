@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Bimbingan Konseling - SMKN 43 JAKARTA')</title>
     
+    <link rel="icon" type="image/png" href="{{ asset('asset/logo43.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('asset/logo43.png') }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +19,7 @@
     <style>
         [x-cloak] { display: none !important; }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif; /* Diganti ke Plus Jakarta Sans agar lebih modern */
+            font-family: 'Plus Jakarta Sans', sans-serif;
             scroll-behavior: smooth;
         }
         .fade-in { animation: fadeIn 0.6s ease-out; }

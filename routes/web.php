@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChatAnonimController; // Import Controller Baru
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,12 +45,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('layanan.karir');
         })->name('karir');
 
-        // FITUR BARU: Chat Anonim
+        // FITUR: Chat Anonim
+        // Tampilan Form
         Route::get('/chat-anonim', function () {
             return view('layanan.chat-anonim');
         })->name('chat-anonim');
 
-        // FITUR BARU: Pilihan Metode Konseling
+        // Proses Simpan Pesan (Ini yang tadi menyebabkan error)
+        Route::post('/chat-anonim', [ChatAnonimController::class, 'store'])->name('chat-anonim.store');
+
+
+        // FITUR: Pilihan Metode Konseling
         Route::get('/konseling-online', function () {
             return view('layanan.online');
         })->name('online');
@@ -73,7 +79,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    // Tambahkan route admin lainnya di sini
 });
 
 require __DIR__ . '/auth.php';
