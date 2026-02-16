@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ChatAnonimController; // Import Controller Baru
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,7 +26,7 @@ Route::get('/layanan', function () {
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Main Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -35,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Fitur Konseling (Grouping agar rapi)
     Route::prefix('layanan')->name('layanan.')->group(function () {
-        
+
         // Konseling Pribadi & Karir
         Route::get('/konseling-pribadi', function () {
             return view('layanan.pribadi');
@@ -45,17 +44,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('layanan.karir');
         })->name('karir');
 
-        // FITUR: Chat Anonim
-        // Tampilan Form
+        // FITUR BARU: Chat Anonim
         Route::get('/chat-anonim', function () {
             return view('layanan.chat-anonim');
         })->name('chat-anonim');
 
-        // Proses Simpan Pesan (Ini yang tadi menyebabkan error)
-        Route::post('/chat-anonim', [ChatAnonimController::class, 'store'])->name('chat-anonim.store');
-
-
-        // FITUR: Pilihan Metode Konseling
+        // FITUR BARU: Pilihan Metode Konseling
         Route::get('/konseling-online', function () {
             return view('layanan.online');
         })->name('online');
@@ -79,6 +73,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    // Tambahkan route admin lainnya di sini
+});
+
+// Lebih simpel, tidak perlu pakai titik dua (:) lagi
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    // Route admin lainnya bisa ditaruh di sini
 });
 
 require __DIR__ . '/auth.php';

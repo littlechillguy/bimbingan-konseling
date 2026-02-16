@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })
+    // bootstrap/app.php
+
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create(); // Titik koma hanya ada di sini, di paling akhir.
