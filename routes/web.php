@@ -1,37 +1,79 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AdminController; // WAJIB DITAMBAHKAN
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
-// Mengarahkan halaman depan ke home.blade.php
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Halaman Utama Layanan
 Route::get('/layanan', function () {
-    return view('layanan'); // Sesuaikan dengan nama file blade layanan kamu
+    return view('layanan');
 })->name('layanan');
 
-// Halaman Detail Konseling Pribadi
-Route::get('/layanan/konseling-pribadi', function () {
-    return view('layanan.pribadi'); // Folder 'layanan', file 'pribadi.blade.php'
-})->name('layanan.pribadi');
 
-// Halaman Detail Bimbingan Karir
-Route::get('/layanan/bimbingan-karir', function () {
-    return view('layanan.karir'); // Folder 'layanan', file 'karir.blade.php'
-})->name('layanan.karir');
+/*
+|--------------------------------------------------------------------------
+| Authenticated Student Routes (Dashboard & Features)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Main Dashboard
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+    // Fitur Konseling (Grouping agar rapi)
+    Route::prefix('layanan')->name('layanan.')->group(function () {
+        
+        // Konseling Pribadi & Karir
+        Route::get('/konseling-pribadi', function () {
+            return view('layanan.pribadi');
+        })->name('pribadi');
+
+        Route::get('/bimbingan-karir', function () {
+            return view('layanan.karir');
+        })->name('karir');
+
+        // FITUR BARU: Chat Anonim
+        Route::get('/chat-anonim', function () {
+            return view('layanan.chat-anonim');
+        })->name('chat-anonim');
+
+        // FITUR BARU: Pilihan Metode Konseling
+        Route::get('/konseling-online', function () {
+            return view('layanan.online');
+        })->name('online');
+
+        Route::get('/konseling-offline', function () {
+            return view('layanan.offline');
+        })->name('offline');
+    });
+
+    // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    // Tambahkan route admin lainnya di sini
 });
 
 require __DIR__ . '/auth.php';
