@@ -1,119 +1,86 @@
 <nav x-data="{ open: false, atTop: true, userMenu: false }"
-    @scroll.window="atTop = (window.pageYOffset > 10 ? false : true)" :class="{ 
-        'bg-teal-950/90 backdrop-blur-xl shadow-2xl py-2': !atTop, 
-        'bg-teal-800/80 backdrop-blur-md py-3': atTop 
-    }" class="fixed w-full z-50 transition-all duration-500">
-
+    @scroll.window="atTop = (window.pageYOffset > 10 ? false : true)"
+    :class="{ 'py-1 shadow-2xl': !atTop, 'py-2': atTop }"
+    class="fixed w-full z-50 transition-all duration-300 bg-teal-900 border-b border-white/10">
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-20 items-center">
+        <div class="flex justify-between items-center h-16">
 
-            <a href="{{ route('home') }}" class="flex items-center space-x-4 group outline-none">
-                <div class="relative flex items-center">
-                    <img src="{{ asset('asset/logo43.png') }}" alt="Logo Sekolah"
-                        class="h-14 w-auto object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-md">
+            <a href="{{ Auth::check() ? route('dashboard') : route('home') }}" class="flex items-center group relative">
+                <div class="h-10 w-10 bg-white/15 rounded-xl flex items-center justify-center border border-white/20 group-hover:rotate-6 transition-transform duration-500">
+                    <img src="{{ asset('asset/logo43.png') }}" alt="Logo" class="h-7 w-auto object-contain">
                 </div>
-
-                <div class="flex flex-col justify-center border-l-2 border-white/10 pl-4">
-                    <div class="flex items-center">
-                        <span class="text-2xl font-black tracking-tighter text-white leading-none">
-                            SMKN <span class="text-teal-400">43</span>
-                        </span>
-                    </div>
-                    <span class="text-sm font-bold tracking-[0.25em] text-teal-200/80 uppercase mt-1 leading-none">
-                        Jakarta
-                    </span>
+                <div class="ml-3 flex flex-col justify-center">
+                    <h1 class="text-lg sm:text-xl font-black text-white leading-none tracking-tight">
+                        SMKN <span class="text-teal-400">43</span>
+                    </h1>
+                    <p class="text-[9px] font-bold tracking-[0.3em] text-teal-200/60 uppercase">Jakarta</p>
                 </div>
             </a>
 
-            <div class="flex items-center">
-
+            <div class="flex items-center space-x-4">
+                
                 @auth
-                    <div class="hidden md:flex items-center space-x-2 mr-8">
-                        <a href="{{ route('home') }}"
-                            class="relative px-4 py-2 text-sm font-bold text-white/80 hover:text-white transition-colors group/link">
-                            Beranda
-                            <span
-                                class="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover/link:w-full"></span>
-                        </a>
-                        <a href="{{ route('layanan') }}"
-                            class="relative px-4 py-2 text-sm font-bold text-white/80 hover:text-white transition-colors group/link">
-                            Layanan
-                            <span
-                                class="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-400 transition-all duration-300 group-hover/link:w-full"></span>
-                        </a>
+                    <div class="hidden md:flex items-center space-x-1 bg-black/10 rounded-full p-1 border border-white/5 mr-2">
+                        <a href="{{ route('dashboard') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">BERANDA</a>
+                        <a href="{{ route('layanan') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">LAYANAN</a>
                     </div>
 
                     <div class="relative" @click.away="userMenu = false">
-                        <button @click="userMenu = !userMenu"
-                            class="flex items-center p-1.5 pr-4 space-x-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group active:scale-95 shadow-inner">
-
-                            <div class="relative">
-                                <div
-                                    class="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg transform transition-transform group-hover:rotate-6">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
+                        <button @click="userMenu = !userMenu" class="relative flex items-center group focus:outline-none">
+                            <div class="relative z-10">
+                                <div class="w-9 h-9 bg-gradient-to-tr from-teal-400 to-emerald-500 rounded-[14px] p-[2px] shadow-lg group-hover:-rotate-6 transition-all duration-300">
+                                    <div class="w-full h-full bg-teal-900 rounded-[12px] flex items-center justify-center text-white text-xs font-black overflow-hidden border border-white/5">
+                                        {{ substr(Auth::user()->name, 0, 1) }}
+                                    </div>
                                 </div>
-                                <div
-                                    class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-teal-900 rounded-full">
-                                </div>
+                                <span class="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-400 border-2 border-teal-900"></span>
+                                </span>
                             </div>
 
-                            <div class="hidden sm:block text-left">
-                                <p class="text-[10px] text-teal-400 font-black uppercase tracking-widest leading-none mb-1">
-                                    Panel Siswa</p>
-                                <p class="text-sm font-bold text-white leading-none">
-                                    {{ Auth::user()->name }}
-                                </p>
+                            <div class="hidden md:block ml-2 text-left leading-tight">
+                                <p class="text-xs font-black text-white group-hover:text-teal-300 transition-colors">{{ Auth::user()->name }}</p>
+                                <p class="text-[8px] text-teal-300/70 font-bold uppercase tracking-widest">Siswa Aktif</p>
                             </div>
-
-                            <svg class="w-4 h-4 text-teal-400 transition-transform duration-300"
-                                :class="{ 'rotate-180': userMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
                         </button>
 
-                        <div x-show="userMenu" x-cloak x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-                            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                            class="absolute right-0 mt-4 w-64 bg-teal-950/95 backdrop-blur-2xl rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-3 z-50 border border-white/10 overflow-hidden">
+                        <div x-show="userMenu" x-cloak 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             class="absolute right-0 mt-4 w-60 origin-top-right">
+                            
+                            <div class="overflow-hidden bg-teal-800 border border-white/10 rounded-[24px] shadow-2xl">
+                                <div class="px-5 py-4 bg-black/10 border-b border-white/5">
+                                    <p class="text-[9px] text-teal-300 font-black uppercase tracking-widest mb-1 opacity-70">Akun Siswa</p>
+                                    <h4 class="text-white font-black text-base truncate">{{ Auth::user()->name }}</h4>
+                                </div>
 
-                            <div class="px-6 py-4 mb-2 bg-white/5 border-b border-white/5">
-                                <p class="text-[10px] text-teal-400 font-black uppercase tracking-[0.2em] mb-1">Identitas
-                                    Siswa</p>
-                                <p class="text-sm font-bold text-white truncate">{{ Auth::user()->email }}</p>
-                            </div>
-
-                            <div class="px-2 space-y-1">
-                                <a href="{{ url('/dashboard') }}"
-                                    class="flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-teal-500 hover:text-white rounded-2xl transition-all font-bold group/item">
-                                    <div class="p-2 bg-white/5 rounded-lg group-hover/item:bg-white/20">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-width="2"
-                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <span>Dashboard Panel</span>
-                                </a>
-
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="flex items-center space-x-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-2xl transition-all font-bold">
-                                        <div class="p-2 bg-red-500/5 rounded-lg">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"></path>
-                                            </svg>
+                                <div class="p-2 space-y-1">
+                                    <a href="{{ url('/dashboard') }}" class="flex items-center px-4 py-3 hover:bg-teal-500/20 rounded-xl transition-all group/item">
+                                        <div class="h-8 w-8 bg-teal-400/10 rounded-lg flex items-center justify-center text-teal-300 group-hover/item:scale-110 transition-transform">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                                         </div>
-                                        <span>Keluar Sesi</span>
-                                    </button>
-                                </form>
+                                        <span class="ml-3 text-sm font-black text-white">Dashboard</span>
+                                    </a>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full flex items-center px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
+                                            <div class="h-8 w-8 bg-red-500/10 rounded-lg flex items-center justify-center">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7"></path></svg>
+                                            </div>
+                                            <span class="ml-3 text-sm font-black uppercase italic">Logout</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 @else
                     <a href="{{ route('login') }}"
-                        class="px-8 py-3 bg-teal-500 text-white rounded-2xl hover:bg-teal-400 hover:shadow-[0_10px_25px_rgba(20,184,166,0.4)] transition-all duration-300 font-black text-sm tracking-tight active:scale-95 border border-teal-300/20 shadow-lg shadow-teal-950/20">
+                        class="px-6 py-2.5 bg-teal-500 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-teal-400 transition-all duration-300 shadow-lg shadow-black/20 border border-teal-400/20 active:scale-95">
                         Mulai Konseling
                     </a>
                 @endauth
