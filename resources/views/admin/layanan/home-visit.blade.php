@@ -1,0 +1,176 @@
+@extends('layouts.app')
+
+@section('title', 'Home Visit - Tenang.id')
+
+@section('content')
+<style> [x-cloak] { display: none !important; } </style>
+
+<div class="min-h-screen bg-[#FBFBFB] flex overflow-hidden" 
+     x-data="{ 
+        openModal: false, 
+        isEdit: false, 
+        selectedVisit: {} 
+     }">
+    
+    @include('admin.partials.sidebar')
+
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="h-20 bg-white border-b border-gray-50 flex items-center justify-between px-10 sticky top-0 z-20">
+            <h2 class="font-bold text-gray-800">Layanan BK / Home Visit</h2>
+            <div class="flex items-center gap-4">
+                <p class="text-sm font-bold text-gray-900">{{ auth()->user()->name }}</p>
+                <img src="https://ui-avatars.com/api/?name={{ auth()->user()->name }}&background=0D9488&color=fff" class="w-10 h-10 rounded-xl shadow-sm" alt="Avatar">
+            </div>
+        </header>
+
+        <main class="p-6 lg:p-10 max-w-5xl mx-auto w-full">
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-teal-50 text-teal-600 border border-teal-100 rounded-2xl font-bold flex items-center gap-3 shadow-sm">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            {{-- FORM INPUT (Sama seperti sebelumnya) --}}
+            <div class="bg-white border border-gray-100 rounded-[2.5rem] shadow-sm p-8 mb-10">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-gray-900">Input Kunjungan Rumah</h3>
+                        <p class="text-sm text-gray-500 font-medium">Dokumentasikan laporan baru.</p>
+                    </div>
+                </div>
+                <form action="{{ route('admin.home-visit.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @csrf
+                    <input type="text" name="nama_siswa" required placeholder="Nama Siswa" class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                    <input type="date" name="tanggal_kunjungan" required class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                    <input type="text" name="alamat" required placeholder="Alamat Lengkap" class="md:col-span-2 w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                    <textarea name="keterangan" rows="3" required placeholder="Keterangan..." class="md:col-span-2 w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition"></textarea>
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-teal-600 text-white font-black rounded-xl hover:bg-teal-700 transition">Simpan Laporan</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- TABEL RIWAYAT --}}
+            <div class="bg-white border border-gray-100 rounded-[2.5rem] shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <th class="px-8 py-4">Siswa</th>
+                            <th class="px-8 py-4 text-center">Tanggal</th>
+                            <th class="px-8 py-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($visits as $visit)
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="px-8 py-5 text-sm font-bold text-gray-900">{{ $visit->nama_siswa }}</td>
+                            <td class="px-8 py-5 text-center text-sm font-bold text-gray-600">
+                                {{ \Carbon\Carbon::parse($visit->tanggal_kunjungan)->format('d/m/Y') }}
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex justify-center gap-3">
+                                    {{-- Logo Mata (Hanya Lihat) --}}
+                                    <button @click="selectedVisit = { 
+                                        id: '{{ $visit->id }}',
+                                        nama: '{{ $visit->nama_siswa }}', 
+                                        tgl: '{{ $visit->tanggal_kunjungan }}',
+                                        alamat: '{{ $visit->alamat }}',
+                                        ket: '{{ addslashes($visit->keterangan) }}'
+                                    }; isEdit = false; openModal = true" 
+                                    class="p-2 text-gray-400 hover:text-teal-600 transition">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </button>
+
+                                    {{-- Logo Tong Sampah --}}
+                                    <form action="{{ route('admin.home-visit.destroy', $visit->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    {{-- MODAL GABUNGAN (Detail & Edit) --}}
+    <div x-show="openModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" x-cloak>
+        <div @click.away="openModal = false" class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100">
+            
+            <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                <h3 class="text-lg font-black text-gray-900" x-text="isEdit ? 'Edit Laporan' : 'Detail Kunjungan'"></h3>
+                <button @click="openModal = false" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form :action="'/admin/home-visit/' + selectedVisit.id" method="POST">
+                @csrf @method('PUT')
+                <div class="p-8 space-y-6">
+                    {{-- Tampilan DETAIL (Read Only) --}}
+                    <template x-if="!isEdit">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Siswa</label>
+                                <p class="text-sm font-bold text-gray-900" x-text="selectedVisit.nama"></p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tanggal</label>
+                                    <p class="text-sm font-bold text-gray-700" x-text="selectedVisit.tgl"></p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Alamat</label>
+                                    <p class="text-xs font-medium text-gray-600" x-text="selectedVisit.alamat"></p>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-teal-50 rounded-2xl border border-teal-100">
+                                <label class="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1 block">Hasil Kunjungan</label>
+                                <p class="text-sm text-gray-700 leading-relaxed italic" x-text="selectedVisit.ket"></p>
+                            </div>
+                        </div>
+                    </template>
+
+                    {{-- Tampilan EDIT (Input Mode) --}}
+                    <template x-if="isEdit">
+                        <div class="space-y-4">
+                            <input type="text" name="nama_siswa" x-model="selectedVisit.nama" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            <input type="date" name="tanggal_kunjungan" x-model="selectedVisit.tgl" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            <input type="text" name="alamat" x-model="selectedVisit.alamat" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            <textarea name="keterangan" rows="4" x-model="selectedVisit.ket" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="p-8 bg-gray-50/50 flex justify-end gap-3">
+                    {{-- Tombol saat mode DETAIL --}}
+                    <template x-if="!isEdit">
+                        <button type="button" @click="isEdit = true" class="px-6 py-2 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition shadow-lg shadow-amber-100 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Edit Data
+                        </button>
+                    </template>
+
+                    {{-- Tombol saat mode EDIT --}}
+                    <template x-if="isEdit">
+                        <div class="flex gap-2">
+                            <button type="button" @click="isEdit = false" class="px-6 py-2 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl">Batal</button>
+                            <button type="submit" class="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl">Simpan Perubahan</button>
+                        </div>
+                    </template>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
