@@ -64,7 +64,7 @@
         @endif
 
         <div class="relative">
-            <form action="{{ route('layanan.chat-anonim.store') }}" method="POST" class="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 soft-shadow overflow-hidden focus-within:ring-4 focus-within:ring-teal-50/50 transition-all duration-500">
+            <form action="{{ route('layanan.chat-anonim') }}" method="POST" class="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 soft-shadow overflow-hidden focus-within:ring-4 focus-within:ring-teal-50/50 transition-all duration-500">
                 @csrf
                 <textarea 
                     name="message"

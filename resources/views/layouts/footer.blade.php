@@ -17,7 +17,7 @@
             <div>
                 <h4 class="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Navigasi</h4>
                 <ul class="space-y-4 text-gray-500 text-sm">
-                    <li><a href="{{ route('home') }}" class="hover:text-teal-600 transition-colors">Beranda</a></li>
+                    <li><a href="{{ route('dashboard') }}" class="hover:text-teal-600 transition-colors">Dashboard</a></li>
                     <li><a href="{{ route('layanan.chat-anonim') }}" class="hover:text-teal-600 transition-colors">Chat Anonim</a></li>
                     <li><a href="#" class="hover:text-teal-600 transition-colors">Informasi Karir</a></li>
                 </ul>
@@ -28,7 +28,7 @@
                 <ul class="space-y-4 text-gray-500 text-sm">
                     <li class="flex items-start gap-2">
                         <span class="font-bold text-gray-700">Alamat:</span>
-                        <span>Jl. Swadarma Raya No.43, Ulujami, Pesanggrahan, Jakarta Selatan.</span>
+                        <span>JL. CIPULIR 1, Cipulir, Kebayoran Lama, Jakarta Selatan</span>
                     </li>
                     <li class="flex items-center gap-2">
                         <span class="font-bold text-gray-700">Email:</span>
