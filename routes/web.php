@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChatAnonimController; // Import controller chat
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +29,7 @@ Route::get('/layanan', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Main Dashboard
+    // Main Dashboard Student
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -44,12 +46,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('layanan.karir');
         })->name('karir');
 
-        // FITUR BARU: Chat Anonim
+        // FITUR: Chat Anonim (Sisi Siswa)
         Route::get('/chat-anonim', function () {
             return view('layanan.chat-anonim');
         })->name('chat-anonim');
 
-        // FITUR BARU: Pilihan Metode Konseling
+        // Route untuk menyimpan pesan anonim
+        Route::post('/chat-anonim', [ChatAnonimController::class, 'store']);
+
+        // FITUR: Pilihan Metode Konseling
         Route::get('/konseling-online', function () {
             return view('layanan.online');
         })->name('online');
@@ -67,22 +72,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| Admin BK Routes
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    // Tambahkan route admin lainnya di sini
-});
-
-// Lebih simpel, tidak perlu pakai titik dua (:) lagi
-Route::middleware(['auth', 'is_admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Dashboard Admin
+    Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    })->name('admin.dashboard');
+    })->name('dashboard');
 
-    // Route admin lainnya bisa ditaruh di sini
+    // --- FITUR CHAT ANONIM ADMIN ---
+    
+    // 1. Tampilan Utama Chat
+    Route::get('/layanan/chat', function () {
+        $messages = DB::table('messages')
+            ->join('users', 'messages.sender_id', '=', 'users.id')
+            ->select('messages.*', 'users.name as original_name')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('admin.layanan.admin-chat', compact('messages'));
+    })->name('chat');
+
+    // 2. Aksi Tandai Dibaca (PATCH)
+    Route::patch('/layanan/chat/{id}/read', function ($id) {
+        DB::table('messages')->where('id', $id)->update(['is_read' => true]);
+        return back()->with('success', 'Pesan telah ditandai sebagai dibaca.');
+    })->name('chat.read');
+
+    // 3. Aksi Hapus Pesan (DELETE)
+    Route::delete('/layanan/chat/{id}', function ($id) {
+        DB::table('messages')->where('id', $id)->delete();
+        return back()->with('success', 'Pesan anonim berhasil dihapus permanen.');
+    })->name('chat.delete');
+
+    // --- FITUR LAINNYA ---
+    // Route::post('/antrean/update/{id}', [AdminController::class, 'updateAntrean'])->name('antrean.update');
 });
 
 require __DIR__ . '/auth.php';
