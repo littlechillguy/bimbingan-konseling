@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kirim Pesan Anonim - TENANG.ID</title>
+    <title>Kirim Pesan Anonim - SMKN 43 JAKARTA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -29,13 +29,13 @@
 
     <header class="w-full max-w-2xl px-6 pt-6 md:pt-10 flex flex-col gap-8">
         <div class="flex items-center justify-between">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-gray-400 hover:text-teal-600 transition-all duration-300 group">
+            <a href="{{ route('layanan') }}" class="inline-flex items-center gap-2 text-gray-400 hover:text-teal-600 transition-all duration-300 group">
                 <div class="p-2 rounded-xl group-hover:bg-teal-50 transition-colors">
                     <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block">Dashboard</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block">Kembali</span>
             </a>
 
             <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">

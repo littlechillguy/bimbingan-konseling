@@ -31,8 +31,8 @@
 
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="group relative px-8 py-4 bg-teal-600 text-white rounded-2xl font-bold transition-all hover:bg-teal-700 hover:shadow-xl flex items-center justify-center">
-                                Masuk ke Panel Siswa
+                            <a href="{{ url('/layanan') }}" class="group relative px-8 py-4 bg-teal-600 text-white rounded-2xl font-bold transition-all hover:bg-teal-700 hover:shadow-xl flex items-center justify-center">
+                                Masuk ke Layanan
                                 <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                             </a>
                         @else
@@ -214,7 +214,7 @@
                 </div>
                 
                 <h2 class="text-3xl md:text-5xl font-black text-white mb-6 relative">Sudah Siap Melepas Beban Pikiran?</h2>
-                <p class="text-teal-50 text-lg mb-10 max-w-2xl mx-auto relative">Jangan dipendam sendiri. Mari kita cari solusinya bersama-sama di ruang aman Tenang.id.</p>
+                <p class="text-teal-50 text-lg mb-10 max-w-2xl mx-auto relative">Jangan dipendam sendiri. Mari kita cari solusinya bersama-sama di ruang aman Bimbingan Konseling SMKN 43 Jakarta</p>
                 
                 <div class="flex flex-col sm:flex-row justify-center gap-4 relative">
                     <a href="{{ route('register') }}" class="px-10 py-4 bg-white text-teal-600 rounded-2xl font-bold hover:bg-teal-50 transition-all shadow-xl">Daftar Sekarang</a>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatAnonimController;
+use App\Http\Controllers\CareerExplorationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -22,14 +23,23 @@ Route::get('/layanan', function () { return view('layanan'); })->name('layanan')
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('layanan')->name('layanan.')->group(function () {
-        Route::get('/konseling-pribadi', function () { return view('layanan.pribadi'); })->name('pribadi');
+        // Konseling Umum / Konseling Ahli
+        Route::get('/konseling', function () { return view('layanan.konseling'); })->name('konseling');
+        
+        // Bimbingan Karir & Eksplorasi
         Route::get('/bimbingan-karir', function () { return view('layanan.karir'); })->name('karir');
+        Route::post('/bimbingan-karir', [CareerExplorationController::class, 'store'])->name('karir.store');
+
+        // Chat Anonim
         Route::get('/chat-anonim', function () { return view('layanan.chat-anonim'); })->name('chat-anonim');
         Route::post('/chat-anonim', [ChatAnonimController::class, 'store']);
+        
+        // Jenis Konseling Lainnya
         Route::get('/konseling-online', function () { return view('layanan.online'); })->name('online');
         Route::get('/konseling-offline', function () { return view('layanan.offline'); })->name('offline');
     });
 
+    // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -37,7 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin BK Routes (Sudah Dirapikan & Form Fix)
+| Admin BK Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -45,16 +55,19 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // Dashboard Admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Home Visit (Menampilkan Halaman & Proses Simpan)
+    // Fitur: Lihat Hasil Eksplorasi Karir Siswa (Tersambung ke minat-karir.blade.php)
+    Route::get('/layanan/minat-karir', function () {
+        $dataKarir = \App\Models\CareerExploration::with('user')->latest()->get();
+        return view('admin.layanan.minat-karir', compact('dataKarir'));
+    })->name('minat-karir');
+    
+    // Home Visit
     Route::get('/home-visit', [AdminController::class, 'homeVisit'])->name('home-visit');
     Route::post('/home-visit', [AdminController::class, 'storeHomeVisit'])->name('home-visit.store');
-    
-    // --- PERBAIKAN DI SINI ---
-    // Hapus '/admin' dari string URL karena sudah dicover oleh prefix group
     Route::put('/home-visit/{id}', [AdminController::class, 'updateHomeVisit'])->name('home-visit.update');
     Route::delete('/home-visit/{id}', [AdminController::class, 'destroyHomeVisit'])->name('home-visit.destroy');
 
-    // --- FITUR CHAT ANONIM ADMIN ---
+    // Fitur: Chat Anonim Admin
     Route::get('/layanan/chat', function () {
         $messages = DB::table('messages')
             ->join('users', 'messages.sender_id', '=', 'users.id')
