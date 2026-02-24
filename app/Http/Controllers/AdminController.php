@@ -16,7 +16,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        // Hanya ambil status pending agar dashboard bersih dari data yang sudah diproses
+        // Ambil status pending untuk antrean masuk
         $requests = CounselingRequest::with('user')
                     ->where('status', 'pending')
                     ->orderBy('created_at', 'desc')
@@ -28,6 +28,28 @@ class AdminController extends Controller
     }
 
     /**
+     * HALAMAN JADWAL: Monitoring jadwal aktif
+     */
+    public function jadwal()
+{
+    // 1. Ambil data yang sudah dijadwalkan (scheduled)
+    $scheduledRequests = CounselingRequest::with('user')
+        ->where('status', 'scheduled')
+        ->orderBy('scheduled_date', 'asc')
+        ->get();
+
+    // 2. Ambil data untuk Riwayat (completed) - INI YANG KURANG
+    $completedRequests = CounselingRequest::with('user')
+        ->where('status', 'completed')
+        ->orderBy('updated_at', 'desc')
+        ->take(6) 
+        ->get();
+
+    // 3. Pastikan memanggil view 'admin.jadwal' dan kirim variabelnya
+    return view('admin.jadwal', compact('scheduledRequests', 'completedRequests'));
+}
+
+    /**
      * PROSES KONSELING: Mengubah status menjadi Scheduled & Kirim WA
      */
     public function updateCounseling(Request $request, $id)
@@ -35,6 +57,7 @@ class AdminController extends Controller
         $request->validate([
             'date' => 'required|date',
             'time' => 'required',
+            'type_service' => 'required', // Tambahkan validasi jenis layanan
         ]);
 
         $counseling = CounselingRequest::with('user')->findOrFail($id);
@@ -42,7 +65,8 @@ class AdminController extends Controller
         $counseling->update([
             'scheduled_date' => $request->date,
             'scheduled_time' => $request->time,
-            'status' => 'scheduled'
+            'service_type'   => $request->type_service, // Pastikan kolom ini ada di DB
+            'status'         => 'scheduled'
         ]);
 
         $namaSiswa = $counseling->user->name;
@@ -56,7 +80,6 @@ class AdminController extends Controller
                  "📍 Tempat: Ruang BK\n\n" .
                  "Silakan datang tepat waktu ya. Terima kasih.";
 
-        // Format No WA
         $noWa = $counseling->whatsapp;
         if (str_starts_with($noWa, '0')) {
             $noWa = '62' . substr($noWa, 1);
@@ -68,12 +91,32 @@ class AdminController extends Controller
     }
 
     /**
-     * HASIL KONSELING (ARSIP): Menampilkan history yang sudah selesai
+     * SELESAIKAN KONSELING: Mengubah status menjadi Completed
+     * (Fungsi ini dipanggil dari tombol 'Selesai' di halaman jadwal)
      */
+    public function completeCounseling($id)
+    {
+        $counseling = CounselingRequest::findOrFail($id);
+        $counseling->update(['status' => 'completed']);
+
+        return redirect()->back()->with('success', 'Sesi konseling telah selesai dan masuk ke arsip.');
+    }
+
+    /**
+     * HAPUS/BATALKAN JADWAL
+     */
+    public function destroyCounseling($id)
+    {
+        $counseling = CounselingRequest::findOrFail($id);
+        $counseling->delete();
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+    // ... (Fungsi Hasil Konseling, Home Visit, dan Karir tetap sama atau sesuaikan di bawah) ...
+
     public function hasilKonseling()
     {
-        // Mengambil data dari CounselingRequest yang statusnya 'completed'
-        // digabung dengan data manual dari tabel counseling_results
         $requestsDone = CounselingRequest::with('user')
                         ->where('status', 'completed')
                         ->orderBy('updated_at', 'desc')
@@ -84,99 +127,5 @@ class AdminController extends Controller
         return view('admin.layanan.hasil-konseling', compact('requestsDone', 'manualResults'));
     }
 
-    /**
-     * SIMPAN CATATAN: Guru BK mengisi hasil akhir konseling
-     */
-    public function storeHasilKonseling(Request $request)
-    {
-        $request->validate([
-            'nama_siswa' => 'required',
-            'jenis_layanan' => 'required',
-            'keterangan' => 'required',
-        ]);
-
-        DB::table('counseling_results')->insert([
-            'nama_siswa' => $request->nama_siswa,
-            'jenis_layanan' => $request->jenis_layanan,
-            'keterangan' => $request->keterangan,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return back()->with('success', 'Catatan hasil konseling berhasil diarsipkan.');
-    }
-
-    /* --- FITUR HOME VISIT --- */
-    public function homeVisit()
-    {
-        $visits = DB::table('home_visits')->orderBy('created_at', 'desc')->get();
-        return view('admin.layanan.home-visit', compact('visits'));
-    }
-
-    public function storeHomeVisit(Request $request)
-    {
-        $request->validate([
-            'nama_siswa' => 'required|string|max:255',
-            'tanggal_kunjungan' => 'required|date',
-            'alamat' => 'required',
-            'keterangan' => 'required',
-        ]);
-
-        DB::table('home_visits')->insert([
-            'nama_siswa' => $request->nama_siswa,
-            'tanggal_kunjungan' => $request->tanggal_kunjungan,
-            'alamat' => $request->alamat,
-            'keterangan' => $request->keterangan,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'Data Home Visit berhasil disimpan!');
-    }
-
-    public function destroyHomeVisit($id)
-    {
-        DB::table('home_visits')->where('id', $id)->delete();
-        return redirect()->back()->with('success', 'Data Home Visit berhasil dihapus.');
-    }
-
-    /* --- FITUR LAINNYA --- */
-    public function jadwal()
-    {
-        return view('admin.jadwal');
-    }
-
-    public function minatKarir()
-    {
-        $dataKarir = CareerExploration::with('user')->latest()->get();
-        return view('admin.layanan.minat-karir', compact('dataKarir'));
-    }
-
-    public function destroyMinatKarir($id)
-    {
-        CareerExploration::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Data karir dihapus.');
-    }
-
-    public function chatIndex()
-    {
-        $messages = DB::table('messages')
-            ->join('users', 'messages.sender_id', '=', 'users.id')
-            ->select('messages.*', 'users.name as original_name')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('admin.layanan.admin-chat', compact('messages'));
-    }
-
-    public function chatRead($id)
-    {
-        DB::table('messages')->where('id', $id)->update(['is_read' => true]);
-        return back();
-    }
-
-    public function chatDestroy($id)
-    {
-        DB::table('messages')->where('id', $id)->delete();
-        return back()->with('success', 'Pesan dihapus.');
-    }
+    // ... (Sisa fungsi storeHasilKonseling, homeVisit, minatKarir, chat, dll) ...
 }

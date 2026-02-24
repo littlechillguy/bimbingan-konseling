@@ -3,11 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\CounselingRequest;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CounselingController extends Controller
 {
+    /**
+     * Menampilkan halaman Monitoring & Tindak Lanjut
+     */
+    public function tindakLanjut()
+    {
+        // Ambil data yang masih PENDING (Antrean Masuk)
+        $requests = CounselingRequest::with('user')
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Ambil data yang sudah SCHEDULED (Agenda Aktif)
+        $scheduledRequests = CounselingRequest::with('user')
+            ->where('status', 'scheduled')
+            ->orderBy('scheduled_date', 'asc')
+            ->get();
+
+        // --- TAMBAHAN BARU: Ambil data yang COMPLETED (Riwayat) ---
+        $completedRequests = CounselingRequest::with('user')
+            ->where('status', 'completed')
+            ->orderBy('updated_at', 'desc')
+            ->take(6) // Ambil 6 riwayat terbaru saja agar tidak kepanjangan
+            ->get();
+
+        // Pastikan completedRequests ikut dikirim ke view
+        return view('admin.layanan.tindak-lanjut', compact('requests', 'scheduledRequests', 'completedRequests'));
+    }
+
     /**
      * Digunakan oleh Siswa untuk mengirim keluhan
      */
@@ -21,7 +49,7 @@ class CounselingController extends Controller
         ]);
 
         CounselingRequest::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'category' => $request->category,
             'urgency' => $request->urgency,
             'whatsapp' => $request->whatsapp, 
@@ -33,8 +61,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Digunakan oleh Admin BK untuk memproses antrean dari Tindak Lanjut
-     * Mengarahkan ke WhatsApp & mengubah status ke 'scheduled'
+     * Proses ke WA & Ubah status ke Scheduled
      */
     public function update(Request $request, $id)
     {
@@ -46,7 +73,6 @@ class CounselingController extends Controller
             'time' => 'required',
         ]);
 
-        // 1. Update data di database
         $item->update([
             'service_type' => $request->type_service,
             'scheduled_date' => $request->date,
@@ -54,69 +80,33 @@ class CounselingController extends Controller
             'status' => 'scheduled', 
         ]);
 
-        // 2. Format Pesan WhatsApp
         $namaSiswa = $item->user->name;
         $jenisLayanan = str_replace('_', ' ', strtoupper($request->type_service));
         $tanggal = date('d-m-Y', strtotime($request->date));
         $jam = $request->time;
 
-        $pesan = "Halo *{$namaSiswa}*,\n\n";
-        $pesan .= "Permintaan konseling kamu telah disetujui oleh Guru BK.\n";
-        $pesan .= "------------------------------------------\n";
-        $pesan .= "Jenis Layanan: *{$jenisLayanan}*\n";
-        $pesan .= "Jadwal: *{$tanggal}*\n";
-        $pesan .= "Jam: *{$jam} WIB*\n";
-        $pesan .= "------------------------------------------\n";
-        $pesan .= "Mohon datang tepat waktu ke ruang BK SMKN 43 Jakarta. Terima kasih.";
+        $pesan = "Halo *{$namaSiswa}*,\n\nJadwal konseling Anda: *{$jenisLayanan}* pada *{$tanggal}* jam *{$jam} WIB*. Mohon hadir di ruang BK.";
 
-        // Format nomor WA
         $noWa = $item->whatsapp;
-        if (str_starts_with($noWa, '0')) {
-            $noWa = '62' . substr($noWa, 1);
-        } elseif (!str_starts_with($noWa, '62')) {
-            $noWa = '62' . $noWa;
-        }
+        if (str_starts_with($noWa, '0')) $noWa = '62' . substr($noWa, 1);
+        elseif (!str_starts_with($noWa, '62')) $noWa = '62' . $noWa;
 
-        $urlWa = "https://wa.me/{$noWa}?text=" . urlencode($pesan);
-
-        return redirect()->away($urlWa);
+        return redirect()->away("https://wa.me/{$noWa}?text=" . urlencode($pesan));
     }
 
     /**
-     * Menampilkan halaman Monitoring Tindak Lanjut
-     * Memperbaiki error: Undefined variable $requests
-     */
-    public function tindakLanjut()
-    {
-        // Ambil data yang masih PENDING (untuk form tindak lanjut)
-        $requests = CounselingRequest::with('user')
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Ambil data yang sudah SCHEDULED (untuk monitoring card)
-        $scheduledRequests = CounselingRequest::with('user')
-            ->where('status', 'scheduled')
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
-
-        // Kirim keduanya ke view
-        return view('admin.layanan.tindak-lanjut', compact('requests', 'scheduledRequests'));
-    }
-
-    /**
-     * Menyelesaikan proses tindak lanjut (Status: Completed)
+     * Selesaikan Sesi dari halaman Monitoring
      */
     public function complete($id)
     {
         $item = CounselingRequest::findOrFail($id);
         $item->update(['status' => 'completed']);
 
-        return redirect()->route('admin.layanan.tindak-lanjut')->with('success', 'Layanan BK telah selesai dilaksanakan.');
+        return redirect()->back()->with('success', 'Sesi konseling telah berhasil diselesaikan!');
     }
 
     /**
-     * Menghapus/Membatalkan permintaan konseling
+     * Hapus/Batal
      */
     public function destroy($id)
     {
@@ -124,5 +114,46 @@ class CounselingController extends Controller
         $item->delete();
 
         return redirect()->back()->with('success', 'Data antrean berhasil dihapus.');
+    }
+
+    // --- BAGIAN HASIL KONSELING ---
+
+    /**
+     * Menampilkan Riwayat Hasil Konseling (Halaman Tersendiri)
+     */
+    public function hasilIndex()
+    {
+        $results = CounselingRequest::with('user')
+            ->where('status', 'completed')
+            ->whereNotNull('hasil_akhir')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('admin.layanan.hasil-konseling', compact('results'));
+    }
+
+    /**
+     * Simpan Catatan Hasil Konseling (Input Manual)
+     */
+    public function storeHasil(Request $request)
+    {
+        $request->validate([
+            'nama_siswa' => 'required',
+            'jenis_layanan' => 'required',
+            'keterangan' => 'required',
+        ]);
+
+        CounselingRequest::create([
+            'user_id' => Auth::id(), 
+            'service_type' => $request->jenis_layanan,
+            'hasil_akhir' => $request->keterangan,
+            'status' => 'completed',
+            'message' => 'Catatan: ' . $request->nama_siswa, 
+            'whatsapp' => '0', 
+            'category' => 'Lainnya',
+            'urgency' => 'Normal'
+        ]);
+
+        return redirect()->back()->with('success', 'Catatan hasil konseling berhasil disimpan!');
     }
 }

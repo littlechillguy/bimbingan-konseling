@@ -60,18 +60,24 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // Dashboard Admin & Antrean (Menampilkan status 'pending')
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // --- FITUR UTAMA KONSELING (PENJADWALAN & TINDAK LANJUT) ---
-    // Proses dari Dashboard (Update Jadwal & Jenis Layanan + WA)
+    // --- FITUR UTAMA KONSELING (PENJADWALAN, TINDAK LANJUT, & HASIL) ---
+    
+    // 1. Proses dari Dashboard (Update Jadwal & Kirim WA)
     Route::post('/counseling/{id}/update', [CounselingController::class, 'update'])->name('counseling.update');
     
-    // Halaman Tindak Lanjut (Menampilkan status 'scheduled')
+    // 2. Monitoring Jadwal / Tindak Lanjut (Status 'scheduled')
     Route::get('/layanan/tindak-lanjut', [CounselingController::class, 'tindakLanjut'])->name('layanan.tindak-lanjut');
     
-    // Menyelesaikan Konseling (Status 'scheduled' -> 'completed')
+    // 3. Selesaikan Sesi (Status 'scheduled' -> 'completed')
     Route::post('/counseling/{id}/complete', [CounselingController::class, 'complete'])->name('counseling.complete');
 
-    // Menghapus/Membatalkan Konseling (Penyelesaian error yang Anda alami)
+    // 4. Hapus/Batalkan Konseling
     Route::delete('/counseling/{id}/delete', [CounselingController::class, 'destroy'])->name('counseling.delete');
+
+    // 5. Catatan Hasil Konseling (Arsip & Input Manual)
+    // Sekarang diarahkan ke CounselingController
+    Route::get('/hasil-konseling', [CounselingController::class, 'hasilIndex'])->name('hasil-konseling');
+    Route::post('/hasil-konseling/store', [CounselingController::class, 'storeHasil'])->name('hasil-konseling.store');
 
     // --- MANAJEMEN LAINNYA ---
     Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal');
@@ -81,10 +87,6 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::post('/home-visit', [AdminController::class, 'storeHomeVisit'])->name('home-visit.store');
     Route::put('/home-visit/{id}', [AdminController::class, 'updateHomeVisit'])->name('home-visit.update');
     Route::delete('/home-visit/{id}', [AdminController::class, 'destroyHomeVisit'])->name('home-visit.destroy');
-
-    // Hasil Konseling (Arsip)
-    Route::get('/hasil-konseling', [AdminController::class, 'hasilKonseling'])->name('hasil-konseling');
-    Route::post('/hasil-konseling', [AdminController::class, 'storeHasilKonseling'])->name('hasil-konseling.store');
 
     // Layanan Minat Karir
     Route::get('/layanan/minat-karir', [AdminController::class, 'minatKarir'])->name('minat-karir');
