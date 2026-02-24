@@ -3,7 +3,9 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h2 class="font-black text-2xl text-gray-800 leading-tight tracking-tight">
-                    {{ __('Halo, ') }} <span class="text-teal-600">{{ auth()->user()->name }}!</span> 👋
+                    {{ __('Halo, ') }} 
+                    {{-- Menggunakan optional() atau null coalescing agar tidak error jika belum login --}}
+                    <span class="text-teal-600">{{ auth()->user()->name ?? 'Siswa' }}!</span> 👋
                 </h2>
                 <p class="text-sm text-gray-500 font-medium">Apa yang bisa kami bantu hari ini?</p>
             </div>
@@ -97,41 +99,10 @@
         </div>
 
         <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-            <div x-show="showChatMenu" 
-                 x-cloak
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 translate-y-10 scale-90"
-                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-10 scale-90"
-                 class="bg-white p-4 rounded-[2rem] shadow-2xl border border-gray-100 w-64 mb-2">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2 text-center">Chat Guru BK</p>
-                <div class="space-y-2">
-                    <a href="https://wa.me/6283894541627" target="_blank" class="flex items-center gap-3 p-3 hover:bg-teal-50 rounded-2xl transition-all group border border-transparent hover:border-teal-100">
-                        <img src="https://ui-avatars.com/api/?name=Ibu+Sari&background=0D9488&color=fff" class="w-10 h-10 rounded-full" alt="">
-                        <div>
-                            <p class="text-sm font-bold text-gray-800">Ibu Sari, S.Pd</p>
-                        </div>
-                    </a>
-                    <a href="https://wa.me/628987654321" target="_blank" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-2xl transition-all group border border-transparent hover:border-blue-100">
-                        <img src="https://ui-avatars.com/api/?name=Pak+Budi&background=2563EB&color=fff" class="w-10 h-10 rounded-full" alt="">
-                        <div>
-                            <p class="text-sm font-bold text-gray-800">Pak Budi, S.Psi</p>
-                        </div>
-                    </a>
+            <div x-show="showChatMenu" x-cloak ...>
                 </div>
-            </div>
-
-            <button @click="showChatMenu = !showChatMenu" 
-                    class="w-16 h-16 bg-[#25D366] text-white rounded-full shadow-xl shadow-green-200 flex items-center justify-center hover:scale-110 active:scale-90 transition-all duration-300 relative group">
-                <span class="absolute -top-1 -right-1 flex h-5 w-5" x-show="!showChatMenu">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-5 w-5 bg-green-500 border-2 border-white"></span>
-                </span>
-                <svg x-show="!showChatMenu" class="w-8 h-8 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.481 5.229 3.481 8.406c0 6.556-5.333 11.888-11.889 11.888-2.013 0-3.987-.511-5.741-1.483l-6.142 1.611zm6.109-3.277l.439.26c1.604.953 3.446 1.456 5.34 1.456 5.735 0 10.403-4.668 10.403-10.403s-4.668-10.403-10.403-10.403-10.403 4.668-10.403 10.403c0 2.112.631 4.135 1.82 5.855l.286.413-1.002 3.659 3.757-.985zm10.613-7.583c-.3-.15-1.771-.875-2.046-.975-.275-.1-.475-.15-.675.15-.2.3-.775 1.012-.95 1.212-.175.2-.35.225-.65.075-.3-.15-1.263-.463-2.403-1.48-1.129-1.007-1.888-2.251-2.113-2.625-.225-.375-.025-.575.125-.725.137-.137.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.588-.491-.508-.675-.517-.175-.008-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.025-1.05 2.5s1.075 2.925 1.225 3.125c.15.2 2.113 3.226 5.118 4.525.714.31 1.272.495 1.706.632.715.226 1.365.195 1.88.118.573-.085 1.771-.725 2.021-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35z"/></svg>
-                <svg x-show="showChatMenu" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <button @click="showChatMenu = !showChatMenu" ...>
+                </button>
         </div>
     </div>
 </x-app-layout>
