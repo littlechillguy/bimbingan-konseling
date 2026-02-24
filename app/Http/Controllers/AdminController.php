@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\CareerExploration; // Pastikan Model ini di-import
 
 class AdminController extends Controller
 {
@@ -12,17 +13,50 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Fitur Home Visit
-    |--------------------------------------------------------------------------
-    */
+    /* --- FITUR JADWAL --- */
+    public function jadwal()
+    {
+        return view('admin.layanan.jadwal');
+    }
+
+    /* --- FITUR MINAT KARIR (Solusi Error Anda) --- */
+    public function minatKarir()
+    {
+        // Mengambil data eksplorasi karir beserta data user/siswanya
+        $dataKarir = CareerExploration::with('user')->latest()->get();
+        return view('admin.layanan.minat-karir', compact('dataKarir'));
+    }
+
+    /* --- FITUR HASIL KONSELING --- */
+    public function hasilKonseling()
+    {
+        $results = DB::table('counseling_results')->orderBy('created_at', 'desc')->get();
+        return view('admin.layanan.hasil-konseling', compact('results'));
+    }
+
+    public function storeHasilKonseling(Request $request)
+    {
+        $request->validate([
+            'nama_siswa' => 'required',
+            'jenis_layanan' => 'required',
+            'keterangan' => 'required',
+        ]);
+
+        DB::table('counseling_results')->insert([
+            'nama_siswa' => $request->nama_siswa,
+            'jenis_layanan' => $request->jenis_layanan,
+            'keterangan' => $request->keterangan,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Catatan hasil konseling berhasil disimpan.');
+    }
+
+    /* --- FITUR HOME VISIT --- */
     public function homeVisit()
     {
-        $visits = DB::table('home_visits')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-
+        $visits = DB::table('home_visits')->orderBy('created_at', 'desc')->get();
         return view('admin.layanan.home-visit', compact('visits'));
     }
 
@@ -73,11 +107,7 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data kunjungan berhasil dihapus!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Fitur Chat Anonim
-    |--------------------------------------------------------------------------
-    */
+    /* --- FITUR CHAT ANONIM --- */
     public function chatIndex()
     {
         $messages = DB::table('messages')
@@ -100,41 +130,4 @@ class AdminController extends Controller
         DB::table('messages')->where('id', $id)->delete();
         return back()->with('success', 'Pesan anonim berhasil dihapus permanen.');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Fitur Jadwal Masuk
-    |--------------------------------------------------------------------------
-    */
-    public function jadwal()
-    {
-        // Anda bisa mengambil data jadwal dari database jika nanti ingin dibuat dinamis
-        // Untuk sekarang, kita arahkan ke view-nya saja
-        return view('admin.jadwal'); 
-    }
-    public function hasilKonseling()
-{
-    // Mengambil data hasil konseling (asumsi tabel sudah ada atau gunakan DB biasa)
-    $results = DB::table('counseling_results')->orderBy('created_at', 'desc')->get();
-    
-    return view('admin.layanan.hasil-konseling', compact('results'));
-}
-
-public function storeHasilKonseling(Request $request)
-{
-    $request->validate([
-        'nama_siswa' => 'required',
-        'jenis_layanan' => 'required',
-        'keterangan' => 'required',
-    ]);
-
-    DB::table('counseling_results')->insert([
-        'nama_siswa' => $request->nama_siswa,
-        'jenis_layanan' => $request->jenis_layanan,
-        'keterangan' => $request->keterangan,
-        'created_at' => now(),
-    ]);
-
-    return back()->with('success', 'Catatan hasil konseling berhasil disimpan.');
-}
 }

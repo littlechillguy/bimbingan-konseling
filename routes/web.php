@@ -5,7 +5,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatAnonimController;
 use App\Http\Controllers\CareerExplorationController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin BK Routes
+| Admin BK Routes (Full Controller Based)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -55,11 +54,8 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // Dashboard Admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Fitur: Lihat Hasil Eksplorasi Karir Siswa (Tersambung ke minat-karir.blade.php)
-    Route::get('/layanan/minat-karir', function () {
-        $dataKarir = \App\Models\CareerExploration::with('user')->latest()->get();
-        return view('admin.layanan.minat-karir', compact('dataKarir'));
-    })->name('minat-karir');
+    // Jadwal Masuk (YANG TADI KEHAPUS)
+    Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal');
     
     // Home Visit
     Route::get('/home-visit', [AdminController::class, 'homeVisit'])->name('home-visit');
@@ -67,25 +63,17 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::put('/home-visit/{id}', [AdminController::class, 'updateHomeVisit'])->name('home-visit.update');
     Route::delete('/home-visit/{id}', [AdminController::class, 'destroyHomeVisit'])->name('home-visit.destroy');
 
-    // Fitur: Chat Anonim Admin
-    Route::get('/layanan/chat', function () {
-        $messages = DB::table('messages')
-            ->join('users', 'messages.sender_id', '=', 'users.id')
-            ->select('messages.*', 'users.name as original_name')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('admin.layanan.admin-chat', compact('messages'));
-    })->name('chat');
+    // Hasil Konseling (Fitur Baru)
+    Route::get('/hasil-konseling', [AdminController::class, 'hasilKonseling'])->name('hasil-konseling');
+    Route::post('/hasil-konseling', [AdminController::class, 'storeHasilKonseling'])->name('hasil-konseling.store');
 
-    Route::patch('/layanan/chat/{id}/read', function ($id) {
-        DB::table('messages')->where('id', $id)->update(['is_read' => true]);
-        return back()->with('success', 'Pesan telah ditandai sebagai dibaca.');
-    })->name('chat.read');
+    // Minat Karir Siswa
+    Route::get('/layanan/minat-karir', [AdminController::class, 'minatKarir'])->name('minat-karir');
 
-    Route::delete('/layanan/chat/{id}', function ($id) {
-        DB::table('messages')->where('id', $id)->delete();
-        return back()->with('success', 'Pesan anonim berhasil dihapus permanen.');
-    })->name('chat.delete');
+    // Chat Anonim Admin
+    Route::get('/layanan/chat', [AdminController::class, 'chatIndex'])->name('chat');
+    Route::patch('/layanan/chat/{id}/read', [AdminController::class, 'chatRead'])->name('chat.read');
+    Route::delete('/layanan/chat/{id}', [AdminController::class, 'chatDestroy'])->name('chat.delete');
 });
 
 require __DIR__ . '/auth.php';
