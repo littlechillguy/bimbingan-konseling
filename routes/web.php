@@ -21,8 +21,6 @@ Route::get('/layanan', function () { return view('layanan'); })->name('layanan')
 */
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
-
     Route::prefix('layanan')->name('layanan.')->group(function () {
         Route::get('/konseling-pribadi', function () { return view('layanan.pribadi'); })->name('pribadi');
         Route::get('/bimbingan-karir', function () { return view('layanan.karir'); })->name('karir');

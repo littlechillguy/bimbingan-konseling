@@ -6,7 +6,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
 
-            <a href="{{ Auth::check() ? route('dashboard') : route('home') }}" class="flex items-center group relative">
+            <a href="{{ route('home') }}" class="flex items-center group relative">
                 <div class="h-10 w-10 bg-white/15 rounded-xl flex items-center justify-center border border-white/20 group-hover:rotate-6 transition-transform duration-500">
                     <img src="{{ asset('asset/logo43.png') }}" alt="Logo" class="h-7 w-auto object-contain">
                 </div>
@@ -20,18 +20,18 @@
 
             <div class="flex items-center space-x-4">
                 
-                @auth
-                    <div class="hidden md:flex items-center space-x-1 bg-black/10 rounded-full p-1 border border-white/5 mr-2">
-                        <a href="{{ route('dashboard') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">BERANDA</a>
-                        <a href="{{ route('layanan') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">LAYANAN</a>
-                    </div>
+                <div class="hidden md:flex items-center space-x-1 bg-black/10 rounded-full p-1 border border-white/5 mr-2">
+                    <a href="{{ route('home') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">BERANDA</a>
+                    <a href="{{ route('layanan') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">LAYANAN</a>
+                </div>
 
+                @if(auth()->check())
                     <div class="relative" @click.away="userMenu = false">
                         <button @click="userMenu = !userMenu" class="relative flex items-center group focus:outline-none">
                             <div class="relative z-10">
                                 <div class="w-9 h-9 bg-gradient-to-tr from-teal-400 to-emerald-500 rounded-[14px] p-[2px] shadow-lg group-hover:-rotate-6 transition-all duration-300">
                                     <div class="w-full h-full bg-teal-900 rounded-[12px] flex items-center justify-center text-white text-xs font-black overflow-hidden border border-white/5">
-                                        {{ substr(Auth::user()->name, 0, 1) }}
+                                        {{ substr(auth()->user()->name, 0, 1) }}
                                     </div>
                                 </div>
                                 <span class="absolute -top-0.5 -right-0.5 flex h-3 w-3">
@@ -40,7 +40,7 @@
                             </div>
 
                             <div class="hidden md:block ml-2 text-left leading-tight">
-                                <p class="text-xs font-black text-white group-hover:text-teal-300 transition-colors">{{ Auth::user()->name }}</p>
+                                <p class="text-xs font-black text-white group-hover:text-teal-300 transition-colors">{{ auth()->user()->name }}</p>
                                 <p class="text-[8px] text-teal-300/70 font-bold uppercase tracking-widest">Siswa Aktif</p>
                             </div>
                         </button>
@@ -54,15 +54,15 @@
                             <div class="overflow-hidden bg-teal-800 border border-white/10 rounded-[24px] shadow-2xl">
                                 <div class="px-5 py-4 bg-black/10 border-b border-white/5">
                                     <p class="text-[9px] text-teal-300 font-black uppercase tracking-widest mb-1 opacity-70">Akun Siswa</p>
-                                    <h4 class="text-white font-black text-base truncate">{{ Auth::user()->name }}</h4>
+                                    <h4 class="text-white font-black text-base truncate">{{ auth()->user()->name }}</h4>
                                 </div>
 
                                 <div class="p-2 space-y-1">
-                                    <a href="{{ url('/dashboard') }}" class="flex items-center px-4 py-3 hover:bg-teal-500/20 rounded-xl transition-all group/item">
+                                    <a href="{{ route('home') }}" class="flex items-center px-4 py-3 hover:bg-teal-500/20 rounded-xl transition-all group/item">
                                         <div class="h-8 w-8 bg-teal-400/10 rounded-lg flex items-center justify-center text-teal-300 group-hover/item:scale-110 transition-transform">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                                         </div>
-                                        <span class="ml-3 text-sm font-black text-white">Dashboard</span>
+                                        <span class="ml-3 text-sm font-black text-white">Beranda</span>
                                     </a>
 
                                     <form method="POST" action="{{ route('logout') }}">
@@ -83,7 +83,7 @@
                         class="px-6 py-2.5 bg-teal-500 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-teal-400 transition-all duration-300 shadow-lg shadow-black/20 border border-teal-400/20 active:scale-95">
                         Mulai Konseling
                     </a>
-                @endauth
+                @endif
 
             </div>
         </div>
