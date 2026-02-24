@@ -4,8 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatAnonimController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
-
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -37,42 +35,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin BK Routes (Sudah Dirapikan & Form Fix)
+| Admin BK Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard Admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // Jadwal Masuk (Route baru yang Anda minta sebelumnya)
+    Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal');
     
-    // Home Visit (Menampilkan Halaman & Proses Simpan)
+    // --- FITUR CHAT ANONIM ADMIN (Sekarang Menggunakan Controller) ---
+    Route::get('/layanan/chat', [AdminController::class, 'chatIndex'])->name('chat');
+    Route::patch('/layanan/chat/{id}/read', [AdminController::class, 'chatRead'])->name('chat.read');
+    Route::delete('/layanan/chat/{id}', [AdminController::class, 'chatDestroy'])->name('chat.delete');
+
+    // Hasil Konseling
+    Route::get('/hasil-konseling', [AdminController::class, 'hasilKonseling'])->name('hasil-konseling');
+    Route::post('/hasil-konseling', [AdminController::class, 'storeHasilKonseling'])->name('hasil-konseling.store');
+    
+    // Home Visit
     Route::get('/home-visit', [AdminController::class, 'homeVisit'])->name('home-visit');
     Route::post('/home-visit', [AdminController::class, 'storeHomeVisit'])->name('home-visit.store');
-    
-    // --- PERBAIKAN DI SINI ---
-    // Hapus '/admin' dari string URL karena sudah dicover oleh prefix group
     Route::put('/home-visit/{id}', [AdminController::class, 'updateHomeVisit'])->name('home-visit.update');
     Route::delete('/home-visit/{id}', [AdminController::class, 'destroyHomeVisit'])->name('home-visit.destroy');
-
-    // --- FITUR CHAT ANONIM ADMIN ---
-    Route::get('/layanan/chat', function () {
-        $messages = DB::table('messages')
-            ->join('users', 'messages.sender_id', '=', 'users.id')
-            ->select('messages.*', 'users.name as original_name')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('admin.layanan.admin-chat', compact('messages'));
-    })->name('chat');
-
-    Route::patch('/layanan/chat/{id}/read', function ($id) {
-        DB::table('messages')->where('id', $id)->update(['is_read' => true]);
-        return back()->with('success', 'Pesan telah ditandai sebagai dibaca.');
-    })->name('chat.read');
-
-    Route::delete('/layanan/chat/{id}', function ($id) {
-        DB::table('messages')->where('id', $id)->delete();
-        return back()->with('success', 'Pesan anonim berhasil dihapus permanen.');
-    })->name('chat.delete');
 });
 
 require __DIR__ . '/auth.php';
