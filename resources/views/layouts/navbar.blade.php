@@ -18,7 +18,7 @@
                 </div>
             </a>
 
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 md:space-x-4">
                 
                 <div class="hidden md:flex items-center space-x-1 bg-black/10 rounded-full p-1 border border-white/5 mr-2">
                     <a href="{{ route('home') }}" class="px-4 py-1.5 text-[11px] font-black text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide">BERANDA</a>
@@ -80,12 +80,42 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}"
-                        class="px-6 py-2.5 bg-teal-500 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-teal-400 transition-all duration-300 shadow-lg shadow-black/20 border border-teal-400/20 active:scale-95">
+                        class="hidden md:block px-6 py-2.5 bg-teal-500 text-white rounded-full font-black text-[11px] uppercase tracking-widest hover:bg-teal-400 transition-all duration-300 shadow-lg shadow-black/20 border border-teal-400/20">
                         Mulai Konseling
                     </a>
                 @endif
 
+                <button @click="open = !open" class="md:hidden flex items-center justify-center p-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none">
+                    <svg class="h-6 w-6 transition-transform duration-300" :class="{'rotate-90': open}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path x-show="open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
             </div>
+        </div>
+    </div>
+
+    <div x-show="open" x-cloak 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-4"
+         class="md:hidden bg-teal-900 border-t border-white/10 shadow-2xl">
+        <div class="px-4 pt-4 pb-6 space-y-2">
+            <a href="{{ route('home') }}" class="flex items-center px-4 py-3 bg-white/5 rounded-2xl text-white font-black text-sm tracking-widest uppercase">
+                BERANDA
+            </a>
+            <a href="{{ route('layanan') }}" class="flex items-center px-4 py-3 bg-white/5 rounded-2xl text-white font-black text-sm tracking-widest uppercase">
+                LAYANAN
+            </a>
+            @if(!auth()->check())
+            <a href="{{ route('login') }}" class="flex items-center justify-center px-4 py-4 bg-teal-500 rounded-2xl text-white font-black text-sm tracking-widest uppercase shadow-lg">
+                MULAI KONSELING
+            </a>
+            @endif
         </div>
     </div>
 </nav>

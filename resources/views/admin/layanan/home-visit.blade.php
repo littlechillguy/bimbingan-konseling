@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home Visit - Tenang.id')
+@section('title', 'Home Visit - SMKN 43 JAKARTA')
 {{-- Judul ini akan muncul di Navbar Anda secara otomatis --}}
 @section('page_title', 'Layanan BK / Home Visit')
 
