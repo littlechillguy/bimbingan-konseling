@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Pesan Anonim - Admin SMKN 43')
-@section('page_title', 'Kotak Pesan Anonim')
+@section('page_title', 'Layanan BK / Kotak Pesan Anonim')
 
 @section('content')
 <div class="min-h-screen bg-[#FBFBFB] flex overflow-hidden">
