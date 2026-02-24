@@ -3,6 +3,7 @@
 @section('title', 'Bimbingan Konseling - SMKN 43 JAKARTA')
 
 @section('content')
+    {{-- Hero Section --}}
     <section class="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
             <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-teal-50 rounded-full blur-3xl opacity-60"></div>
@@ -31,13 +32,34 @@
 
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         @auth
-                            <a href="{{ url('/layanan') }}" class="group relative px-8 py-4 bg-teal-600 text-white rounded-2xl font-bold transition-all hover:bg-teal-700 hover:shadow-xl flex items-center justify-center">
+                            {{-- BUTTON UTAMA: LAPORAN KARIR (Dianjurkan) --}}
+                            <div class="relative group">
+                                <div class="absolute -top-3 -right-2 z-20">
+                                    <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg uppercase tracking-wider animate-bounce">
+                                        Wajib Isi!
+                                    </span>
+                                </div>
+                                <a href="{{ route('layanan.karir') }}" class="relative px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex items-center justify-center overflow-hidden">
+                                    {{-- Efek cahaya shimmer --}}
+                                    <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-[30deg] -translate-x-full group-hover:animate-shimmer"></div>
+                                    
+                                    <svg class="w-5 h-5 mr-2 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Isi Laporan Karir
+                                </a>
+                            </div>
+
+                            {{-- BUTTON SEKUNDER: LAYANAN --}}
+                            <a href="{{ url('/layanan') }}" class="px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold hover:bg-gray-50 hover:border-teal-200 transition-all flex items-center justify-center group">
                                 Masuk ke Layanan
-                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
                             </a>
                         @else
                             <a href="{{ route('register') }}" class="px-8 py-4 bg-teal-600 text-white rounded-2xl font-bold transition-all hover:bg-teal-700 hover:shadow-lg flex items-center justify-center">
-                                Buat Janji Temu
+                                Mulai Konseling
                             </a>
                             <a href="{{ route('login') }}" class="px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold hover:bg-gray-50 hover:border-teal-200 transition-all flex items-center justify-center">
                                 Login Siswa
@@ -76,6 +98,7 @@
         </div>
     </section>
 
+    {{-- Layanan Section --}}
     <section id="layanan" class="py-24 bg-[#F8FAFC]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl mb-16">
@@ -123,15 +146,11 @@
                     <h3 class="text-2xl font-bold mb-4 text-gray-900">Tes Bakat Minat</h3>
                     <p class="text-gray-500">Kenali potensi dirimu lewat berbagai instrumen psikologi yang menyenangkan.</p>
                 </div>
-                
-                <div class="bg-emerald-50 p-8 rounded-[2rem] border border-emerald-100 flex flex-col items-center justify-center text-center">
-                    <h3 class="text-xl font-bold text-emerald-900 mb-4">Butuh Bantuan Mendesak?</h3>
-                    <a href="https://wa.me/your-number" class="text-emerald-600 font-bold hover:underline">Hubungi Guru BK via WhatsApp →</a>
-                </div>
             </div>
         </div>
     </section>
 
+    {{-- Testimonial Section --}}
     <section class="py-24 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -176,6 +195,7 @@
         </div>
     </section>
 
+    {{-- FAQ Section --}}
     <section class="py-24 bg-[#F8FAFC]">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -206,6 +226,7 @@
         </div>
     </section>
 
+    {{-- CTA Final Section --}}
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-gradient-to-r from-teal-600 to-emerald-500 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-teal-200">
@@ -227,6 +248,15 @@
 
 @push('styles')
 <style>
+    /* Animasi Shimmer untuk Button Karir */
+    @keyframes shimmer {
+        100% { transform: skew-x(-30deg) translateX(250%); }
+    }
+    .animate-shimmer {
+        animation: shimmer 2.5s infinite;
+    }
+
+    /* Animasi Bouncing Slow untuk Gambar/Elemen Visual */
     @keyframes bounce-slow {
         0%, 100% { transform: translateY(-5%); }
         50% { transform: translateY(0); }
@@ -234,6 +264,8 @@
     .animate-bounce-slow {
         animation: bounce-slow 3s infinite;
     }
+
+    /* Fade In saat Page Load */
     .animate-fade-in {
         animation: fadeIn 1s ease-out;
     }
@@ -241,5 +273,8 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Hide element before Alpine.js load */
+    [x-cloak] { display: none !important; }
 </style>
 @endpush

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Hasil Konseling - Tenang.id')
+@section('title', 'Hasil Konseling - SMKN 43 JAKARTA')
 @section('page_title', 'Layanan BK / Hasil Konseling')
 
 @section('content')

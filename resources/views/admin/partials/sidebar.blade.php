@@ -40,7 +40,7 @@
             <span class="text-sm">Hasil Konseling</span>
         </a>
 
-        <a href="#" class="flex items-center space-x-3 p-3 text-gray-500 hover:bg-gray-50 rounded-xl font-semibold transition">
+        <a href="{{ route('admin.layanan.tindak-lanjut') }}" class="flex items-center space-x-3 p-3 text-gray-500 hover:bg-gray-50 rounded-xl font-semibold transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
             </svg>

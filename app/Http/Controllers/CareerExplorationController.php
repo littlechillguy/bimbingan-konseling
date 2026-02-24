@@ -8,23 +8,25 @@ use Illuminate\Support\Facades\Auth;
 
 class CareerExplorationController extends Controller
 {
-    public function store(Request $request)
-    {
-        $request->validate([
-            'hobi' => 'required|string|max:255',
-            'pelajaran_favorit' => 'required',
-            'work_style' => 'required',
-            'cita_cita_keluhan' => 'required|string',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'hobi' => 'required|string',
+        'pelajaran_favorit' => 'required',
+        'work_style' => 'required',
+        'career_path' => 'required',
+        'cita_cita_keluhan' => 'nullable|string|max:1000', 
+    ]);
 
-        CareerExploration::create([
-            'user_id' => Auth::id(),
-            'hobi' => $request->hobi,
-            'pelajaran_favorit' => $request->pelajaran_favorit,
-            'work_style' => $request->work_style,
-            'cita_cita_keluhan' => $request->cita_cita_keluhan,
-        ]);
+    CareerExploration::create([
+        'user_id' => auth()->id(),
+        'hobi' => $request->hobi,
+        'pelajaran_favorit' => $request->pelajaran_favorit,
+        'work_style' => $request->work_style,
+        'career_path' => $request->career_path,
+        'cita_cita_keluhan' => $request->cita_cita_keluhan, 
+    ]);
 
-        return redirect()->back()->with('success', 'Data karir kamu berhasil dikirim ke Guru BK!');
-    }
+    return back()->with('success', 'Data berhasil dikirim!');
+}
 }

@@ -25,6 +25,7 @@ class CareerExploration extends Model
         'hobi',
         'pelajaran_favorit',
         'work_style',
+        'career_path',
         'cita_cita_keluhan',
     ];
 
