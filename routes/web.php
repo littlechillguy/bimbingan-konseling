@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('layanan')->name('layanan.')->group(function () {
         // Konseling Umum / Konseling Ahli
-        Route::get('/konseling', function () { return view('layanan.konseling'); })->name('konseling');
+        Route::get('/konseling', function () { return view('layanan.konseling-ahli'); })->name('konseling');
         
         // Bimbingan Karir & Eksplorasi
         Route::get('/bimbingan-karir', function () { return view('layanan.karir'); })->name('karir');
