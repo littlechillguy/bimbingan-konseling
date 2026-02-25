@@ -235,6 +235,7 @@ class AdminController extends Controller
     }
 
     /* --- FITUR HOME VISIT --- */
+    /* --- FITUR HOME VISIT --- */
     public function homeVisit()
     {
         $visits = DB::table('home_visits')->orderBy('created_at', 'desc')->get();
@@ -260,6 +261,29 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Data Home Visit berhasil disimpan!');
+    }
+
+    /**
+     * TAMBAHKAN METHOD INI: Untuk memperbarui data Home Visit
+     */
+    public function updateHomeVisit(Request $request, $id)
+    {
+        $request->validate([
+            'nama_siswa' => 'required|string|max:255',
+            'tanggal_kunjungan' => 'required|date',
+            'alamat' => 'required',
+            'keterangan' => 'required',
+        ]);
+
+        DB::table('home_visits')->where('id', $id)->update([
+            'nama_siswa' => $request->nama_siswa,
+            'tanggal_kunjungan' => $request->tanggal_kunjungan,
+            'alamat' => $request->alamat,
+            'keterangan' => $request->keterangan,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Data Home Visit berhasil diperbarui!');
     }
 
     public function destroyHomeVisit($id)

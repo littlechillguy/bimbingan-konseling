@@ -1,11 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Home Visit - SMKN 43 JAKARTA')
-{{-- Judul ini akan muncul di Navbar Anda secara otomatis --}}
 @section('page_title', 'Layanan BK / Home Visit')
 
 @section('content')
-<style> [x-cloak] { display: none !important; } </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style> 
+    [x-cloak] { display: none !important; } 
+    /* Kustomisasi font SweetAlert agar senada dengan UI */
+    .swal2-popup { font-family: inherit !important; }
+</style>
 
 <div class="min-h-screen bg-[#FBFBFB] flex overflow-hidden" 
      x-data="{ 
@@ -17,13 +22,12 @@
     @include('admin.partials.sidebar')
 
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
-        {{-- NAVBAR INTEGRASI --}}
         @include('admin.partials.navbar')
 
-        {{-- Scrollable Content --}}
         <main class="flex-1 overflow-y-auto p-6 lg:p-10">
             <div class="max-w-5xl mx-auto w-full">
                 
+                {{-- Alert Sukses (Opsional jika ingin double dengan SweetAlert) --}}
                 @if(session('success'))
                     <div class="mb-6 p-4 bg-teal-50 text-teal-600 border border-teal-100 rounded-2xl font-bold flex items-center gap-3 shadow-sm">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -84,9 +88,9 @@
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                         </button>
 
-                                        <form action="{{ route('admin.home-visit.destroy', $visit->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">
+                                        <form action="{{ route('admin.home-visit.destroy', $visit->id) }}" method="POST" class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="p-2 text-gray-400 hover:text-red-500 transition">
+                                            <button type="button" onclick="confirmDelete(this)" class="p-2 text-gray-400 hover:text-red-500 transition">
                                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
                                         </form>
@@ -125,7 +129,7 @@
                 </button>
             </div>
 
-            <form :action="'/admin/home-visit/' + selectedVisit.id" method="POST">
+            <form :action="'{{ url('/admin/home-visit') }}/' + selectedVisit.id" method="POST">
                 @csrf @method('PUT')
                 <div class="p-8 space-y-6">
                     {{-- Mode DETAIL --}}
@@ -155,10 +159,22 @@
                     {{-- Mode EDIT --}}
                     <template x-if="isEdit">
                         <div class="space-y-4">
-                            <input type="text" name="nama_siswa" x-model="selectedVisit.nama" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
-                            <input type="date" name="tanggal_kunjungan" x-model="selectedVisit.tgl" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
-                            <input type="text" name="alamat" x-model="selectedVisit.alamat" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
-                            <textarea name="keterangan" rows="4" x-model="selectedVisit.ket" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Nama Siswa</label>
+                                <input type="text" name="nama_siswa" x-model="selectedVisit.nama" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Tanggal</label>
+                                <input type="date" name="tanggal_kunjungan" x-model="selectedVisit.tgl" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Alamat</label>
+                                <input type="text" name="alamat" x-model="selectedVisit.alamat" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Keterangan</label>
+                                <textarea name="keterangan" rows="4" x-model="selectedVisit.ket" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+                            </div>
                         </div>
                     </template>
                 </div>
@@ -181,4 +197,53 @@
         </div>
     </div>
 </div>
+
+<script>
+/**
+ * Fungsi Konfirmasi Hapus dengan SweetAlert2
+ */
+function confirmDelete(button) {
+    const form = button.closest('.delete-form');
+    
+    Swal.fire({
+        title: '<span class="font-black text-gray-900">Hapus Data?</span>',
+        html: '<p class="text-sm text-gray-500 font-medium">Data kunjungan yang dihapus tidak dapat dikembalikan.</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0d9488', // Teal 600
+        cancelButtonColor: '#f3f4f6',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: '<span class="text-gray-600">Batal</span>',
+        reverseButtons: true,
+        background: '#ffffff',
+        customClass: {
+            popup: 'rounded-[2.5rem] border border-gray-100 shadow-2xl',
+            confirmButton: 'px-8 py-3 rounded-xl font-black shadow-lg shadow-teal-100',
+            cancelButton: 'px-8 py-3 rounded-xl font-black'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    })
+}
+
+/**
+ * Notifikasi Sukses SweetAlert Otomatis (Jika ada session)
+ */
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: '<span class="font-black text-gray-900">Berhasil!</span>',
+        text: "{{ session('success') }}",
+        showConfirmButton: false,
+        timer: 2500,
+        background: '#ffffff',
+        customClass: {
+            popup: 'rounded-[2.5rem] border border-gray-100 shadow-xl'
+        }
+    });
+@endif
+</script>
+
 @endsection
