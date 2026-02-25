@@ -50,6 +50,7 @@
                                         <option value="Masalah Keluarga">Masalah Keluarga / Personal</option>
                                         <option value="Kesulitan Belajar">Kesulitan Belajar Berat</option>
                                         <option value="Trauma">Trauma / Pengalaman Buruk</option>
+                                        <option value="Rencana Karir">Rencana Karir</option>
                                         <option value="Lainnya">Lainnya</option>
                                     </select>
                                     @error('category') <p class="text-red-500 text-xs font-bold mt-1 ml-1">{{ $message }}</p> @enderror

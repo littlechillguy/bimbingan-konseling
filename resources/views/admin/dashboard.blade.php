@@ -84,7 +84,7 @@
                                 <thead>
                                     <tr class="bg-slate-50/50">
                                         <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Siswa</th>
-                                        <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Topik</th>
+                                        <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Pesan</th>
                                         <th class="px-8 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Aksi</th>
                                     </tr>
                                 </thead>
@@ -97,11 +97,11 @@
                                         </td>
                                         <td class="px-8 py-5">
                                             <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                                                {{ $req->topik }}
+                                                {{ $req->message }}
                                             </span>
                                         </td>
                                         <td class="px-8 py-5 text-center">
-                                            <button @click="openModal = true; activeName='{{ $req->user->name }}'; activeMessage='{{ $req->keluhan }}'" 
+                                            <button @click="openModal = true; activeName='{{ $req->user->name }}'; activeMessage='{{ $req->message }}'" 
                                                     class="p-2 hover:bg-teal-50 text-teal-600 rounded-lg transition-colors">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

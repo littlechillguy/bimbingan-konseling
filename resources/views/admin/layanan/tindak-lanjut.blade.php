@@ -53,6 +53,8 @@
                                                 <option value="individu">Individu</option>
                                                 <option value="kelompok">Kelompok</option>
                                                 <option value="panggilan_ortu">Ortu</option>
+                                                <option value="reveral">Reveral</option>
+                                                <option value="mediasi">Mediasi</option>
                                             </select>
                                             <input type="date" name="scheduled_date" required class="flex-1 bg-slate-50 border-none rounded-xl text-[11px] font-bold py-2.5">
                                             <input type="time" name="scheduled_time" required class="w-24 bg-slate-50 border-none rounded-xl text-[11px] font-bold py-2.5">
