@@ -207,7 +207,7 @@
             </div>
 
             <p class="text-center mt-8 text-[11px] text-gray-400 font-semibold tracking-widest uppercase">
-                &copy; 2026 TENANG.ID — SMKN 43 JAKARTA
+                &copy; 2026 BK — SMKN 43 JAKARTA
             </p>
         </div>
     </div>
