@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CounselingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CounselingController extends Controller
 {
@@ -13,31 +14,27 @@ class CounselingController extends Controller
      */
     public function tindakLanjut()
     {
-        // Ambil data yang masih PENDING (Antrean Masuk)
         $requests = CounselingRequest::with('user')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Ambil data yang sudah SCHEDULED (Agenda Aktif)
         $scheduledRequests = CounselingRequest::with('user')
             ->where('status', 'scheduled')
             ->orderBy('scheduled_date', 'asc')
             ->get();
 
-        // --- TAMBAHAN BARU: Ambil data yang COMPLETED (Riwayat) ---
         $completedRequests = CounselingRequest::with('user')
             ->where('status', 'completed')
             ->orderBy('updated_at', 'desc')
-            ->take(6) // Ambil 6 riwayat terbaru saja agar tidak kepanjangan
+            ->take(6)
             ->get();
 
-        // Pastikan completedRequests ikut dikirim ke view
         return view('admin.layanan.tindak-lanjut', compact('requests', 'scheduledRequests', 'completedRequests'));
     }
 
     /**
-     * Digunakan oleh Siswa untuk mengirim keluhan
+     * Digunakan oleh Siswa untuk mengirim keluhan (dengan sensor kata kasar)
      */
     public function store(Request $request)
     {
@@ -45,15 +42,18 @@ class CounselingController extends Controller
             'category' => 'required',
             'urgency' => 'required',
             'whatsapp' => 'required|numeric',
-            'message' => 'required',
+            'message' => 'required|min:4',
         ]);
+
+        // Filter kata kasar sebelum disimpan
+        $cleanMessage = $this->filterBadWords($request->message);
 
         CounselingRequest::create([
             'user_id' => Auth::id(),
             'category' => $request->category,
             'urgency' => $request->urgency,
             'whatsapp' => $request->whatsapp, 
-            'message' => $request->message,
+            'message' => $cleanMessage,
             'status' => 'pending',
         ]);
 
@@ -62,40 +62,69 @@ class CounselingController extends Controller
 
     /**
      * Proses ke WA & Ubah status ke Scheduled
+     * PERBAIKAN: Nama input disesuaikan dengan Blade (service_type, scheduled_date, scheduled_time)
      */
     public function update(Request $request, $id)
     {
         $item = CounselingRequest::with('user')->findOrFail($id);
 
+        // Validasi harus sesuai dengan atribut 'name' di form Blade Anda
         $request->validate([
-            'type_service' => 'required',
-            'date' => 'required|date',
-            'time' => 'required',
+            'service_type' => 'required',
+            'scheduled_date' => 'required|date',
+            'scheduled_time' => 'required',
         ]);
 
         $item->update([
-            'service_type' => $request->type_service,
-            'scheduled_date' => $request->date,
-            'scheduled_time' => $request->time,
+            'service_type' => $request->service_type,
+            'scheduled_date' => $request->scheduled_date,
+            'scheduled_time' => $request->scheduled_time,
             'status' => 'scheduled', 
         ]);
 
+        // Persiapan Pesan WA
         $namaSiswa = $item->user->name;
-        $jenisLayanan = str_replace('_', ' ', strtoupper($request->type_service));
-        $tanggal = date('d-m-Y', strtotime($request->date));
-        $jam = $request->time;
+        $jenisLayanan = str_replace('_', ' ', strtoupper($request->service_type));
+        $tanggal = Carbon::parse($request->scheduled_date)->format('d-m-Y');
+        $jam = $request->scheduled_time;
 
-        $pesan = "Halo *{$namaSiswa}*,\n\nJadwal konseling Anda: *{$jenisLayanan}* pada *{$tanggal}* jam *{$jam} WIB*. Mohon hadir di ruang BK.";
+        $pesan = "Halo *{$namaSiswa}*,\n\nIni adalah konfirmasi jadwal konseling Anda:\n" .
+                 "Layanan: *{$jenisLayanan}*\n" .
+                 "Tanggal: *{$tanggal}*\n" .
+                 "Jam: *{$jam} WIB*\n\n" .
+                 "Mohon hadir di ruang BK tepat waktu. Terima kasih.";
 
-        $noWa = $item->whatsapp;
-        if (str_starts_with($noWa, '0')) $noWa = '62' . substr($noWa, 1);
-        elseif (!str_starts_with($noWa, '62')) $noWa = '62' . $noWa;
+        // Format Nomor WA (Menghapus karakter non-digit dan konversi ke 62)
+        $noWa = preg_replace('/[^0-9]/', '', $item->whatsapp);
+        if (str_starts_with($noWa, '0')) {
+            $noWa = '62' . substr($noWa, 1);
+        } elseif (!str_starts_with($noWa, '62')) {
+            $noWa = '62' . $noWa;
+        }
 
         return redirect()->away("https://wa.me/{$noWa}?text=" . urlencode($pesan));
     }
 
     /**
-     * Selesaikan Sesi dari halaman Monitoring
+     * Fungsi Sensor Kata Kasar
+     */
+    private function filterBadWords($text)
+    {
+        $badWords = [
+            'anjing', 'babi', 'monyet', 'bangsat', 'tolol', 'goblok', 'idiot', 
+            'perek', 'lonte', 'kontol', 'memek', 'jembut', 'asu', 'bajingan', 'puki'
+        ];
+
+        foreach ($badWords as $word) {
+            $replacement = substr($word, 0, 1) . str_repeat('*', strlen($word) - 2) . substr($word, -1);
+            $text = preg_replace("/\b$word\b/i", $replacement, $text);
+        }
+
+        return $text;
+    }
+
+    /**
+     * Selesaikan Sesi
      */
     public function complete($id)
     {
@@ -106,7 +135,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Hapus/Batal
+     * Hapus Antrean
      */
     public function destroy($id)
     {
@@ -116,10 +145,8 @@ class CounselingController extends Controller
         return redirect()->back()->with('success', 'Data antrean berhasil dihapus.');
     }
 
-    // --- BAGIAN HASIL KONSELING ---
-
     /**
-     * Menampilkan Riwayat Hasil Konseling (Halaman Tersendiri)
+     * Halaman Riwayat Hasil Akhir
      */
     public function hasilIndex()
     {
@@ -133,7 +160,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Simpan Catatan Hasil Konseling (Input Manual)
+     * Simpan Catatan Hasil
      */
     public function storeHasil(Request $request)
     {
@@ -148,7 +175,7 @@ class CounselingController extends Controller
             'service_type' => $request->jenis_layanan,
             'hasil_akhir' => $request->keterangan,
             'status' => 'completed',
-            'message' => 'Catatan: ' . $request->nama_siswa, 
+            'message' => 'Catatan Manual: ' . $request->nama_siswa, 
             'whatsapp' => '0', 
             'category' => 'Lainnya',
             'urgency' => 'Normal'

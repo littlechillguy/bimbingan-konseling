@@ -34,7 +34,7 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('admin.hasil-konseling.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('admin.hasil-konseling') }}" method="POST" class="space-y-6">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>

@@ -36,10 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('karir');
         Route::post('/bimbingan-karir', [CareerExplorationController::class, 'store'])->name('karir.store');
 
-        // --- CHAT ANONIM (FIXED) ---
-        // Menampilkan halaman chat
+        // --- CHAT ANONIM ---
         Route::get('/chat-anonim', [ChatAnonimController::class, 'index'])->name('chat-anonim');
-        // Memproses pengiriman pesan (POST)
         Route::post('/chat-anonim', [ChatAnonimController::class, 'store'])->name('chat-anonim.store');
         
         // --- LAYANAN LAINNYA ---
@@ -71,15 +69,21 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::post('/kolaborasi', [AdminController::class, 'storeKolaborasi'])->name('kolaborasi.store');
     Route::delete('/kolaborasi/{id}', [AdminController::class, 'destroyKolaborasi'])->name('kolaborasi.destroy');
 
-    // Fitur Utama Konseling
+    // --- FITUR UTAMA KONSELING (TINDAK LANJUT) ---
     Route::get('/layanan/tindak-lanjut', [CounselingController::class, 'tindakLanjut'])->name('layanan.tindak-lanjut');
-    Route::post('/counseling/{id}/update', [CounselingController::class, 'update'])->name('counseling.update');
-    Route::post('/counseling/{id}/complete', [CounselingController::class, 'complete'])->name('counseling.complete');
+    
+    // Perbaikan: Gunakan PUT untuk update data (Konfirmasi jadwal/kirim WA)
+    Route::put('/counseling/{id}/update', [CounselingController::class, 'update'])->name('counseling.update');
+    
+    // Perbaikan: Gunakan PATCH untuk mengubah satu status (Selesaikan sesi)
+    Route::patch('/counseling/{id}/complete', [CounselingController::class, 'complete'])->name('counseling.complete');
+    
     Route::delete('/counseling/{id}', [CounselingController::class, 'destroy'])->name('counseling.delete');
 
-    // Hasil Konseling
+    // --- HASIL KONSELING (RIWAYAT) ---
+    // Perbaikan: Nama rute disesuaikan agar admin.counseling.hasil bisa terpanggil
     Route::get('/hasil-konseling', [CounselingController::class, 'hasilIndex'])->name('hasil-konseling');
-    Route::post('/hasil-konseling', [CounselingController::class, 'storeHasil'])->name('hasil-konseling.store');
+    Route::post('/hasil-konseling', [CounselingController::class, 'storeHasil'])->name('counseling.store-hasil');
 
     // Manajemen Jadwal & Home Visit
     Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal');
