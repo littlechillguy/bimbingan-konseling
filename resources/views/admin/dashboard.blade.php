@@ -5,7 +5,13 @@
 @section('content')
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div class="min-h-screen bg-[#F8FAFC] flex overflow-hidden" x-data="{ openModal: false, openCollabModal: false, activeMessage: '', activeName: '' }">
+<div class="min-h-screen bg-[#F8FAFC] flex overflow-hidden" 
+     x-data="{ 
+        openModal: false, 
+        openCollabModal: false, 
+        activeMessage: '', 
+        activeName: '' 
+     }">
 
     @include('admin.partials.sidebar')
 
@@ -40,7 +46,7 @@
                             <div class="relative">
                                 <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg shadow-teal-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                     </svg>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -58,7 +64,7 @@
                             <div class="relative">
                                 <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg shadow-orange-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Antrean Pending</p>
@@ -95,10 +101,11 @@
                                             </span>
                                         </td>
                                         <td class="px-8 py-5 text-center">
-                                            <button @click="openModal = true; activeName='{{ $req->user->name }}'; activeMessage='{{ $req->keluhan }}'" class="p-2 hover:bg-teal-50 text-teal-600 rounded-lg transition-colors">
+                                            <button @click="openModal = true; activeName='{{ $req->user->name }}'; activeMessage='{{ $req->keluhan }}'" 
+                                                    class="p-2 hover:bg-teal-50 text-teal-600 rounded-lg transition-colors">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                 </svg>
                                             </button>
                                         </td>
@@ -114,7 +121,7 @@
                     </div>
                 </main>
 
-                {{-- SIDEBAR KOLABORASI (RIGHT) - Slimmer Version --}}
+                {{-- SIDEBAR KOLABORASI (RIGHT) --}}
                 <aside class="w-full lg:w-[320px] bg-[#F1F5F9]/30 border-l border-slate-100 p-6 lg:p-8 space-y-8">
                     <div class="flex items-center justify-between">
                         <div>
@@ -123,7 +130,7 @@
                         </div>
                         <button @click="openCollabModal = true" class="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center hover:bg-teal-600 transition-all shadow-md">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-width="3" d="M12 4v16m8-8H4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
                             </svg>
                         </button>
                     </div>
@@ -134,9 +141,9 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden flex items-center justify-center border border-slate-100">
                                     @if($collab->logo)
-                                    <img src="{{ asset('storage/'.$collab->logo) }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/'.$collab->logo) }}" class="w-full h-full object-cover">
                                     @else
-                                    <span class="text-[10px] font-black text-slate-300 uppercase">{{ substr($collab->nama, 0, 2) }}</span>
+                                        <span class="text-[10px] font-black text-slate-300 uppercase">{{ substr($collab->nama, 0, 2) }}</span>
                                     @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -157,26 +164,69 @@
         </div>
     </div>
 
-    {{-- Modal & Flash Message Tetap Sama --}}
-    ...
+    {{-- MODAL DETAIL KELUHAN SISWA --}}
+    <div x-show="openModal" 
+         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-cloak>
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full relative shadow-2xl" @click.away="openModal = false">
+            <h3 class="text-xl font-black text-slate-900 mb-2" x-text="activeName"></h3>
+            <p class="text-[10px] text-teal-600 font-black uppercase tracking-widest mb-6 border-b pb-4">Detail Keluhan / Masalah</p>
+            <p class="text-slate-600 text-sm italic leading-relaxed" x-text="'&quot;' + activeMessage + '&quot;'"></p>
+            <button @click="openModal = false" class="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-teal-600 transition-all shadow-lg shadow-slate-200">
+                Tutup Detail
+            </button>
+        </div>
+    </div>
+
+    {{-- MODAL TAMBAH MITRA KOLABORASI --}}
+    <div x-show="openCollabModal" 
+         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-cloak>
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 lg:p-10 relative overflow-hidden" @click.away="openCollabModal = false">
+            <div class="mb-8">
+                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Tambah Mitra Industri</h3>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Jalin kerjasama kolaborasi baru</p>
+            </div>
+
+            <form action="{{ route('admin.kolaborasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                @csrf
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Nama Perusahaan</label>
+                    <input type="text" name="nama" required class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Deskripsi Kerjasama</label>
+                    <textarea name="deskripsi" rows="2" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Website</label>
+                        <input type="url" name="link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all" placeholder="https://">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Logo Mitra</label>
+                        <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="openCollabModal = false" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all">Simpan Mitra</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #E2E8F0;
-        border-radius: 10px;
-    }
-
-    [x-cloak] {
-        display: none !important;
-    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    [x-cloak] { display: none !important; }
 </style>
 @endsection

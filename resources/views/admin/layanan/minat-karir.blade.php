@@ -4,7 +4,9 @@
 @section('page_title', 'Layanan BK / Minat & Karir')
 
 @section('content')
-{{-- Menambahkan x-data Alpine.js untuk kontrol Modal --}}
+{{-- Library Chart.js --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="min-h-screen bg-[#FBFBFB] flex overflow-hidden" x-data="{ openModal: false, modalData: {} }">
     
     {{-- Sidebar Utama (Kiri) --}}
@@ -137,15 +139,22 @@
                 </div>
             </main>
 
-            {{-- Sidebar Info (Kanan) - Kembali dalam satu file --}}
+            {{-- Sidebar Info (Kanan) dengan Chart --}}
             <aside class="w-80 bg-white border-l border-gray-100 p-8 hidden xl:flex flex-col overflow-y-auto">
                 <div class="mb-10">
-                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Distribusi Karir</h3>
+                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Visualisasi BMW</h3>
+                    
+                    {{-- Box Grafik --}}
+                    <div class="relative bg-gray-50 rounded-[2.5rem] p-6 mb-8 border border-gray-100 shadow-inner" style="height: 240px;">
+                        <canvas id="bmwChart"></canvas>
+                    </div>
+
                     <div class="space-y-4">
                         <div class="bg-gray-900 p-6 rounded-[2rem] text-white shadow-xl">
                             <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Laporan</p>
                             <h4 class="text-4xl font-black">{{ $dataKarir->count() }}</h4>
                         </div>
+                        
                         <div class="grid grid-cols-3 gap-2">
                             <div class="bg-emerald-50 p-3 rounded-2xl text-center border border-emerald-100">
                                 <p class="text-[8px] font-black text-emerald-600 uppercase">B</p>
@@ -175,9 +184,10 @@
         </div>
     </div>
 
-    {{-- MODAL POPUP UNTUK DETAIL --}}
+    {{-- MODAL POPUP --}}
     <div x-show="openModal" 
          class="fixed inset-0 z-[99] flex items-center justify-center p-6 bg-gray-900/60 backdrop-blur-sm"
+         x-transition
          x-cloak>
         <div class="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl p-8" @click.away="openModal = false">
             <div class="flex justify-between items-start mb-6">
@@ -198,4 +208,45 @@
 </div>
 
 <style> [x-cloak] { display: none !important; } </style>
+
+{{-- SCRIPT GRAFIK --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ambil data dari Laravel/Blade
+        const dataStats = [
+            {{ $dataKarir->where('career_path', 'Bekerja')->count() }},
+            {{ $dataKarir->where('career_path', 'Melanjutkan')->count() }},
+            {{ $dataKarir->where('career_path', 'Wirausaha')->count() }}
+        ];
+
+        const ctx = document.getElementById('bmwChart');
+
+        if (ctx && typeof Chart !== 'undefined') {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bekerja', 'Melanjutkan', 'Wirausaha'],
+                    datasets: [{
+                        data: dataStats,
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+                        borderWidth: 6,
+                        borderColor: '#f9fafb',
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+    });
+</script>
 @endsection
