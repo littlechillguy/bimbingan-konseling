@@ -7,14 +7,16 @@
         <div class="flex justify-between items-center h-16">
 
             <a href="{{ route('home') }}" class="flex items-center group relative">
-                <div class="h-10 w-10 bg-white/15 rounded-xl flex items-center justify-center border border-white/20 group-hover:rotate-6 transition-transform duration-500">
+                <div class="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 group-hover:rotate-6 transition-transform duration-500">
                     <img src="{{ asset('asset/logo43.png') }}" alt="Logo" class="h-7 w-auto object-contain">
                 </div>
                 <div class="ml-3 flex flex-col justify-center">
-                    <h1 class="text-lg sm:text-xl font-black text-white leading-none tracking-tight">
-                        SMKN <span class="text-teal-400">43</span>
-                    </h1>
-                    <p class="text-[9px] font-bold tracking-[0.3em] text-teal-200/60 uppercase">Jakarta</p>
+                    <span class="text-[13px] sm:text-[15px] font-black text-white leading-none tracking-tight uppercase">
+                        Bimbingan Konseling</span>
+                    </span>
+                    <span class="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-teal-300/80 uppercase mt-0.5">
+                        SMKN 43 Jakarta
+                    </span>
                 </div>
             </a>
 

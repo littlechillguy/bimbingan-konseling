@@ -32,7 +32,7 @@
 
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         @auth
-                            {{-- BUTTON UTAMA: LAPORAN KARIR (Dianjurkan) --}}
+                            {{-- BUTTON UTAMA: LAPORAN KARIR --}}
                             <div class="relative group">
                                 <div class="absolute -top-3 -right-2 z-20">
                                     <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg uppercase tracking-wider animate-bounce">
@@ -40,9 +40,7 @@
                                     </span>
                                 </div>
                                 <a href="{{ route('layanan.karir') }}" class="relative px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold transition-all hover:bg-black hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex items-center justify-center overflow-hidden">
-                                    {{-- Efek cahaya shimmer --}}
                                     <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-[30deg] -translate-x-full group-hover:animate-shimmer"></div>
-                                    
                                     <svg class="w-5 h-5 mr-2 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
@@ -80,17 +78,50 @@
                     </div>
                 </div>
 
-                <div class="flex-1 relative w-full max-w-[500px] lg:max-w-none">
+                {{-- Kolom Ilustrasi dengan Review yang Berubah-ubah --}}
+                <div class="flex-1 relative w-full max-w-[500px] lg:max-w-none" 
+                     x-data="{ 
+                        activeComment: 0,
+                        comments: [
+                            { text: 'Terima kasih sudah mendengar!', user: 'Siswa Kelas XI' },
+                            { text: 'Sekarang jadi lebih tenang belajarnya.', user: 'Siswa Kelas XII' },
+                            { text: 'Guru BK-nya asik, gak galak sama sekali!', user: 'Siswa Kelas X' },
+                            { text: 'Privasi benar-benar terjaga, aman banget!', user: 'Anonim' }
+                        ],
+                        init() {
+                            setInterval(() => {
+                                this.activeComment = (this.activeComment + 1) % this.comments.length;
+                            }, 4000);
+                        }
+                     }">
+                    
+                    {{-- Gambar Ilustrasi --}}
                     <div class="relative z-10 w-full h-[400px] bg-gradient-to-br from-teal-100 to-blue-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl flex items-center justify-center">
-                         <span class="text-gray-400 font-medium italic text-center px-6">Ilustrasi: Ruang Konseling Tenang.id</span>
+                         <span class="text-gray-400 font-medium italic text-center px-6">Ilustrasi: Bimbingan Konseling</span>
                     </div>
-                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl flex items-center space-x-4 animate-bounce-slow z-20">
-                        <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+
+                    {{-- Floating Comment Card (Review) --}}
+                    <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-2xl flex items-center space-x-4 animate-bounce-slow z-20 min-w-[300px] border border-gray-50">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-gray-900 italic">"Terima kasih sudah mendengar!"</p>
-                            <p class="text-xs text-gray-500">Siswa Kelas XI</p>
+                        
+                        <div class="relative overflow-hidden h-12 flex flex-col justify-center w-full">
+                            <template x-for="(comment, index) in comments" :key="index">
+                                <div x-show="activeComment === index"
+                                     x-transition:enter="transition ease-out duration-500"
+                                     x-transition:enter-start="opacity-0 translate-y-4"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-300 absolute"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 -translate-y-4"
+                                     x-cloak>
+                                    <p class="text-sm font-bold text-gray-900 italic leading-tight" x-text="'&quot;' + comment.text + '&quot;'"></p>
+                                    <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold" x-text="comment.user"></p>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -165,7 +196,7 @@
                         <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">AS</div>
                         <div>
                             <p class="font-bold text-gray-900 text-sm">Anonim</p>
-                            <p class="text-xs text-gray-500">Siswa Kelas XII IPA</p>
+                            <p class="text-xs text-gray-500">Siswa Kelas XII</p>
                         </div>
                     </div>
                 </div>
@@ -176,7 +207,7 @@
                         <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xs">RK</div>
                         <div>
                             <p class="font-bold text-sm">Anonim</p>
-                            <p class="text-xs text-teal-100">Siswa Kelas X IPS</p>
+                            <p class="text-xs text-teal-100">Siswa Kelas X</p>
                         </div>
                     </div>
                 </div>
@@ -187,7 +218,7 @@
                         <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">BP</div>
                         <div>
                             <p class="font-bold text-gray-900 text-sm">Anonim</p>
-                            <p class="text-xs text-gray-500">Siswa Kelas XI IPA</p>
+                            <p class="text-xs text-gray-500">Siswa Kelas XI</p>
                         </div>
                     </div>
                 </div>

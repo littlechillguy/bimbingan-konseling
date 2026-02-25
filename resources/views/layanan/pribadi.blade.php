@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Konseling Pribadi - Tenang.id')
+@section('title', 'Konseling Pribadi - SMKN 43 JAKARTA')
 
 @section('content')
     <section class="pt-32 pb-24 bg-white">
