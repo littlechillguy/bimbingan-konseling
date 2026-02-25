@@ -3,10 +3,11 @@
 @section('title', 'Admin Dashboard - SMKN 43 JAKARTA')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div class="min-h-screen bg-[#F8FAFC] flex overflow-hidden" 
-     x-data="{ 
+<div class="min-h-screen bg-[#F8FAFC] flex overflow-hidden"
+    x-data="{ 
         openModal: false, 
         openCollabModal: false, 
         activeMessage: '', 
@@ -16,7 +17,6 @@
     @include('admin.partials.sidebar')
 
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
-
         @include('admin.partials.navbar')
 
         {{-- Main Scrollable Area --}}
@@ -29,7 +29,7 @@
                     {{-- Welcome Header --}}
                     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
-                            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Utama </h1>
+                            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Utama</h1>
                             <p class="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Panel Kendali Guru BK • SMKN 43 Jakarta</p>
                         </div>
                         <div class="hidden md:block">
@@ -92,17 +92,17 @@
                                     @forelse($requests->take(5) as $req)
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="px-8 py-5">
-                                            <div class="font-bold text-slate-900 text-sm">{{ $req->user->name }}</div>
+                                            <div class="font-bold text-slate-900 text-sm">{{ $req->user->name ?? $req->nama_siswa }}</div>
                                             <div class="text-[10px] text-slate-400">{{ $req->created_at->diffForHumans() }}</div>
                                         </td>
                                         <td class="px-8 py-5">
                                             <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                                                {{ $req->message }}
+                                                {{ Str::limit($req->message, 40) }}
                                             </span>
                                         </td>
                                         <td class="px-8 py-5 text-center">
-                                            <button @click="openModal = true; activeName='{{ $req->user->name }}'; activeMessage='{{ $req->message }}'" 
-                                                    class="p-2 hover:bg-teal-50 text-teal-600 rounded-lg transition-colors">
+                                            <button @click="openModal = true; activeName='{{ $req->user->name ?? $req->nama_siswa }}'; activeMessage='{{ $req->message }}'"
+                                                class="p-2 hover:bg-teal-50 text-teal-600 rounded-lg transition-colors">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -117,6 +117,38 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    {{-- ANALYTICS CHART SECTION --}}
+                    <div class="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm p-8 relative overflow-hidden group">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-teal-50/50 rounded-full blur-3xl"></div>
+                        <div class="relative">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                                <div>
+                                    <h2 class="text-xl font-black text-slate-900 tracking-tight">Statistik Konsultasi</h2>
+                                    {{-- Teks tahun nyesuain yang dipilih --}}
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                        Volume Aktivitas Siswa Tahun {{ $selectedYear }}
+                                    </p>
+                                </div>
+
+                                {{-- DROPDOWN TAHUN BERDASARKAN DATABASE --}}
+                                <form action="{{ route('admin.dashboard') }}" method="GET" id="yearForm">
+                                    <select name="year" onchange="document.getElementById('yearForm').submit()"
+                                        class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer">
+                                        @foreach($availableYears as $year)
+                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
+                                            Tahun {{ $year }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </div>
+
+                            <div class="h-[320px] w-full">
+                                <canvas id="counselingChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -140,10 +172,10 @@
                         <div class="group p-4 bg-white rounded-2xl border border-slate-100 hover:border-teal-200 transition-all">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden flex items-center justify-center border border-slate-100">
-                                    @if($collab->logo)
-                                        <img src="{{ asset('storage/'.$collab->logo) }}" class="w-full h-full object-cover">
+                                    @if(isset($collab->logo) && $collab->logo)
+                                    <img src="{{ asset('storage/'.$collab->logo) }}" class="w-full h-full object-cover">
                                     @else
-                                        <span class="text-[10px] font-black text-slate-300 uppercase">{{ substr($collab->nama, 0, 2) }}</span>
+                                    <span class="text-[10px] font-black text-slate-300 uppercase">{{ substr($collab->nama, 0, 2) }}</span>
                                     @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -164,13 +196,8 @@
         </div>
     </div>
 
-    {{-- MODAL DETAIL KELUHAN SISWA --}}
-    <div x-show="openModal" 
-         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-cloak>
+    {{-- MODAL DETAIL --}}
+    <div x-show="openModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak>
         <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full relative shadow-2xl" @click.away="openModal = false">
             <h3 class="text-xl font-black text-slate-900 mb-2" x-text="activeName"></h3>
             <p class="text-[10px] text-teal-600 font-black uppercase tracking-widest mb-6 border-b pb-4">Detail Keluhan / Masalah</p>
@@ -181,42 +208,27 @@
         </div>
     </div>
 
-    {{-- MODAL TAMBAH MITRA KOLABORASI --}}
-    <div x-show="openCollabModal" 
-         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-cloak>
-        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 lg:p-10 relative overflow-hidden" @click.away="openCollabModal = false">
-            <div class="mb-8">
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Tambah Mitra Industri</h3>
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Jalin kerjasama kolaborasi baru</p>
-            </div>
-
+    {{-- MODAL KOLABORASI --}}
+    <div x-show="openCollabModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak>
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 relative overflow-hidden" @click.away="openCollabModal = false">
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-8">Tambah Mitra Industri</h3>
             <form action="{{ route('admin.kolaborasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                 @csrf
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Nama Perusahaan</label>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nama Perusahaan</label>
                     <input type="text" name="nama" required class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Deskripsi Kerjasama</label>
-                    <textarea name="deskripsi" rows="2" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all"></textarea>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Deskripsi</label>
+                    <textarea name="deskripsi" rows="2" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Website</label>
-                        <input type="url" name="link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all" placeholder="https://">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Logo Mitra</label>
-                        <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
-                    </div>
+                    <input type="url" name="link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm" placeholder="Website URL">
+                    <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-teal-50 file:text-teal-700">
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button type="button" @click="openCollabModal = false" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all">Simpan Mitra</button>
+                    <button type="button" @click="openCollabModal = false" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 shadow-lg">Simpan Mitra</button>
                 </div>
             </form>
         </div>
@@ -224,9 +236,94 @@
 </div>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
-    [x-cloak] { display: none !important; }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E2E8F0;
+        border-radius: 10px;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('counselingChart').getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(13, 148, 136, 0.2)');
+        gradient.addColorStop(1, 'rgba(13, 148, 136, 0.0)');
+
+        // Mengambil data dari controller
+        const dataCounts = @json($counts ?? array_fill(0, 12, 0));
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Siswa Konsultasi',
+                    data: dataCounts,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: '#0D9488',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#FFF',
+                    pointBorderColor: '#0D9488',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    tension: 0.4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(226, 232, 240, 0.5)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: {
+                                size: 10,
+                                weight: '600'
+                            },
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: {
+                                size: 10,
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection

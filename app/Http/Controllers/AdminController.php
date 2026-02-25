@@ -14,17 +14,46 @@ use Illuminate\Support\Facades\Storage;
 class AdminController extends Controller
 {
     /**
-     * DASHBOARD: Menampilkan antrean baru & jadwal aktif
+     * DASHBOARD: Menampilkan statistik dengan filter tahun, antrean baru & jadwal aktif
      */
-    public function index()
+    public function index(Request $request)
     {
-        // 1. Ambil Antrean Baru (Pending)
+        // 1. Ambil tahun unik dari database (kolom scheduled_date) untuk isi dropdown
+        $availableYears = CounselingRequest::whereNotNull('scheduled_date')
+            ->selectRaw('YEAR(scheduled_date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        // Jika database benar-benar kosong, tampilkan tahun sekarang sebagai pilihan default
+        if ($availableYears->isEmpty()) {
+            $availableYears = collect([date('Y')]);
+        }
+
+        // 2. Ambil tahun dari request (input user), default ke tahun terbaru yang ada di database
+        $selectedYear = $request->get('year', $availableYears->first());
+
+        // 3. Logika Grafik (Chart.js)
+        $monthlyData = CounselingRequest::selectRaw('MONTH(scheduled_date) as month, COUNT(*) as total')
+            ->whereYear('scheduled_date', $selectedYear)
+            ->whereNotNull('scheduled_date')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->all();
+
+        // Menyiapkan array 12 bulan (Jan-Des) dengan default 0
+        $counts = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $counts[] = $monthlyData[$i] ?? 0;
+        }
+
+        // 4. Data Summary Dashboard
         $requests = CounselingRequest::with('user')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // 2. Ambil Jadwal yang Sedang Berjalan (Scheduled)
         $scheduledRequests = CounselingRequest::with('user')
             ->where('status', 'scheduled')
             ->orderBy('scheduled_date', 'asc')
@@ -32,45 +61,43 @@ class AdminController extends Controller
             ->get();
 
         $totalSiswa = User::where('role', 'siswa')->count();
-        $kolaborators = \App\Models\Kolaborasi::latest()->get();
+        $kolaborators = Kolaborasi::latest()->get();
 
-        return view('admin.dashboard', compact('requests', 'scheduledRequests', 'totalSiswa', 'kolaborators'));
+        return view('admin.dashboard', compact(
+            'requests', 
+            'scheduledRequests', 
+            'totalSiswa', 
+            'kolaborators', 
+            'counts',
+            'availableYears', 
+            'selectedYear'
+        ));
     }
 
     public function siswaIndex()
     {
-        // Mengambil semua user dengan role siswa
-        $siswas = \App\Models\User::where('role', 'siswa')
+        $siswas = User::where('role', 'siswa')
             ->latest()
-            ->paginate(10); // Gunakan paginate agar tidak berat jika siswa banyak
+            ->paginate(10);
 
         return view('admin.siswa', compact('siswas'));
     }
 
     public function siswaShow($id)
     {
-        // Cari siswa atau gagalkan jika tidak ada
-        $siswa = \App\Models\User::where('role', 'siswa')->findOrFail($id);
-
-        // Perbaikan di sini: Gunakan CounselingRequest (sesuai import di atas) 
-        // atau Counseling (pastikan huruf C besar)
-        $history = \App\Models\CounselingRequest::where('user_id', $id)->latest()->get();
+        $siswa = User::where('role', 'siswa')->findOrFail($id);
+        $history = CounselingRequest::where('user_id', $id)->latest()->get();
 
         return view('admin.siswa.show', compact('siswa', 'history'));
     }
 
-    /**
-     * HALAMAN JADWAL: Monitoring jadwal aktif & Ringkasan Riwayat
-     */
     public function jadwal()
     {
-        // 1. Ambil data yang sudah dijadwalkan (scheduled)
         $scheduledRequests = CounselingRequest::with('user')
             ->where('status', 'scheduled')
             ->orderBy('scheduled_date', 'asc')
             ->get();
 
-        // 2. Ambil data untuk Riwayat singkat (completed)
         $completedRequests = CounselingRequest::with('user')
             ->where('status', 'completed')
             ->orderBy('updated_at', 'desc')
@@ -80,10 +107,6 @@ class AdminController extends Controller
         return view('admin.jadwal', compact('scheduledRequests', 'completedRequests'));
     }
 
-    /**
-     * PROSES KONSELING: Mengubah status menjadi Scheduled & Kirim WA
-     * Menggunakan dropdown jam (hour) dan menit (minute)
-     */
     public function updateCounseling(Request $request, $id)
     {
         $request->validate([
@@ -93,9 +116,7 @@ class AdminController extends Controller
             'type_service' => 'required',
         ]);
 
-        // Menggabungkan Hour dan Minute menjadi format 24 Jam (HH:mm)
         $formattedTime = $request->hour . ':' . $request->minute;
-
         $counseling = CounselingRequest::with('user')->findOrFail($id);
 
         $counseling->update([
@@ -105,8 +126,7 @@ class AdminController extends Controller
             'status'         => 'scheduled'
         ]);
 
-        // Persiapan data untuk pesan WhatsApp
-        $namaSiswa = $counseling->user->name;
+        $namaSiswa = $counseling->user->name ?? $counseling->nama_siswa;
         $tglFormat = Carbon::parse($request->date)->translatedFormat('l, d F Y');
         $jenisLayanan = ucwords(str_replace('_', ' ', $request->type_service));
 
@@ -118,42 +138,29 @@ class AdminController extends Controller
             "📍 Tempat: Ruang BK\n\n" .
             "Silakan datang tepat waktu ya. Terima kasih.";
 
-        // Format No WA
         $noWa = $counseling->whatsapp;
         if (str_starts_with($noWa, '0')) {
             $noWa = '62' . substr($noWa, 1);
         }
 
         $waUrl = "https://wa.me/{$noWa}?text=" . urlencode($pesan);
-
         return redirect()->away($waUrl);
     }
 
-    /**
-     * SELESAIKAN KONSELING: Mengubah status dari Scheduled ke Completed
-     */
     public function completeCounseling($id)
     {
         $counseling = CounselingRequest::findOrFail($id);
         $counseling->update(['status' => 'completed']);
-
         return redirect()->back()->with('success', 'Sesi konseling telah selesai dan masuk ke arsip.');
     }
 
-    /**
-     * HAPUS JADWAL/ANTREAN
-     */
     public function destroyCounseling($id)
     {
         $counseling = CounselingRequest::findOrFail($id);
         $counseling->delete();
-
         return redirect()->back()->with('success', 'Data konseling berhasil dihapus.');
     }
 
-    /**
-     * HASIL KONSELING (HALAMAN ARSIP PENUH)
-     */
     public function hasilKonseling()
     {
         $requestsDone = CounselingRequest::with('user')
@@ -162,13 +169,9 @@ class AdminController extends Controller
             ->get();
 
         $manualResults = DB::table('counseling_results')->orderBy('created_at', 'desc')->get();
-
         return view('admin.layanan.hasil-konseling', compact('requestsDone', 'manualResults'));
     }
 
-    /**
-     * SIMPAN CATATAN MANUAL HASIL KONSELING
-     */
     public function storeHasilKonseling(Request $request)
     {
         $request->validate([
@@ -188,11 +191,6 @@ class AdminController extends Controller
         return back()->with('success', 'Catatan hasil konseling berhasil diarsipkan.');
     }
 
-    // ... method index, minatKarir, dll ...
-
-    /**
-     * Simpan data kolaborasi baru
-     */
     public function storeKolaborasi(Request $request)
     {
         $request->validate([
@@ -204,7 +202,6 @@ class AdminController extends Controller
 
         $logoPath = null;
         if ($request->hasFile('logo')) {
-            // Simpan di folder public/logos
             $logoPath = $request->file('logo')->store('logos', 'public');
         }
 
@@ -218,24 +215,16 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Mitra kolaborasi berhasil ditambahkan!');
     }
 
-    /**
-     * Hapus data kolaborasi
-     */
     public function destroyKolaborasi($id)
     {
         $collab = Kolaborasi::findOrFail($id);
-
         if ($collab->logo) {
             Storage::disk('public')->delete($collab->logo);
         }
-
         $collab->delete();
-
         return redirect()->back()->with('success', 'Mitra berhasil dihapus.');
     }
 
-    /* --- FITUR HOME VISIT --- */
-    /* --- FITUR HOME VISIT --- */
     public function homeVisit()
     {
         $visits = DB::table('home_visits')->orderBy('created_at', 'desc')->get();
@@ -263,9 +252,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data Home Visit berhasil disimpan!');
     }
 
-    /**
-     * TAMBAHKAN METHOD INI: Untuk memperbarui data Home Visit
-     */
     public function updateHomeVisit(Request $request, $id)
     {
         $request->validate([
@@ -292,7 +278,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data Home Visit berhasil dihapus.');
     }
 
-    /* --- FITUR MINAT KARIR --- */
     public function minatKarir()
     {
         $dataKarir = CareerExploration::with('user')->latest()->get();
@@ -305,7 +290,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data karir dihapus.');
     }
 
-    /* --- FITUR PESAN / CHAT --- */
     public function chatIndex()
     {
         $messages = DB::table('messages')
