@@ -29,7 +29,7 @@
                     {{-- Welcome Header --}}
                     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
-                            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Utama 👋</h1>
+                            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Utama </h1>
                             <p class="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Panel Kendali Guru BK • SMKN 43 Jakarta</p>
                         </div>
                         <div class="hidden md:block">
@@ -77,7 +77,7 @@
                     <div class="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
                         <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-white">
                             <h2 class="text-lg font-black text-slate-900 tracking-tight">Antrean Konseling Terbaru</h2>
-                            <a href="#" class="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline">Lihat Semua</a>
+                            <a href="{{ route('admin.layanan.tindak-lanjut') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline">Lihat Semua</a>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
