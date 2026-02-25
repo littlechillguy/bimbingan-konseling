@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\CareerExploration; 
-use App\Models\CounselingRequest; 
+use App\Models\CareerExploration;
+use App\Models\CounselingRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\Kolaborasi;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -18,20 +20,43 @@ class AdminController extends Controller
     {
         // 1. Ambil Antrean Baru (Pending)
         $requests = CounselingRequest::with('user')
-                    ->where('status', 'pending')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // 2. Ambil Jadwal yang Sedang Berjalan (Scheduled)
         $scheduledRequests = CounselingRequest::with('user')
-                            ->where('status', 'scheduled')
-                            ->orderBy('scheduled_date', 'asc')
-                            ->orderBy('scheduled_time', 'asc')
-                            ->get();
+            ->where('status', 'scheduled')
+            ->orderBy('scheduled_date', 'asc')
+            ->orderBy('scheduled_time', 'asc')
+            ->get();
 
         $totalSiswa = User::where('role', 'siswa')->count();
-        
-        return view('admin.dashboard', compact('requests', 'scheduledRequests', 'totalSiswa'));
+        $kolaborators = \App\Models\Kolaborasi::latest()->get();
+
+        return view('admin.dashboard', compact('requests', 'scheduledRequests', 'totalSiswa', 'kolaborators'));
+    }
+
+    public function siswaIndex()
+    {
+        // Mengambil semua user dengan role siswa
+        $siswas = \App\Models\User::where('role', 'siswa')
+            ->latest()
+            ->paginate(10); // Gunakan paginate agar tidak berat jika siswa banyak
+
+        return view('admin.siswa', compact('siswas'));
+    }
+
+    public function siswaShow($id)
+    {
+        // Cari siswa atau gagalkan jika tidak ada
+        $siswa = \App\Models\User::where('role', 'siswa')->findOrFail($id);
+
+        // Perbaikan di sini: Gunakan CounselingRequest (sesuai import di atas) 
+        // atau Counseling (pastikan huruf C besar)
+        $history = \App\Models\CounselingRequest::where('user_id', $id)->latest()->get();
+
+        return view('admin.siswa.show', compact('siswa', 'history'));
     }
 
     /**
@@ -49,7 +74,7 @@ class AdminController extends Controller
         $completedRequests = CounselingRequest::with('user')
             ->where('status', 'completed')
             ->orderBy('updated_at', 'desc')
-            ->take(6) 
+            ->take(6)
             ->get();
 
         return view('admin.jadwal', compact('scheduledRequests', 'completedRequests'));
@@ -72,7 +97,7 @@ class AdminController extends Controller
         $formattedTime = $request->hour . ':' . $request->minute;
 
         $counseling = CounselingRequest::with('user')->findOrFail($id);
-        
+
         $counseling->update([
             'scheduled_date' => $request->date,
             'scheduled_time' => $formattedTime,
@@ -86,12 +111,12 @@ class AdminController extends Controller
         $jenisLayanan = ucwords(str_replace('_', ' ', $request->type_service));
 
         $pesan = "Halo *{$namaSiswa}*, ini Guru BK SMKN 43 Jakarta.\n\n" .
-                 "Permohonan konseling kamu telah dijadwalkan pada:\n" .
-                 "📝 Layanan: *{$jenisLayanan}*\n" .
-                 "📅 Hari/Tgl: {$tglFormat}\n" .
-                 "⏰ Jam: {$formattedTime} WIB\n" .
-                 "📍 Tempat: Ruang BK\n\n" .
-                 "Silakan datang tepat waktu ya. Terima kasih.";
+            "Permohonan konseling kamu telah dijadwalkan pada:\n" .
+            "📝 Layanan: *{$jenisLayanan}*\n" .
+            "📅 Hari/Tgl: {$tglFormat}\n" .
+            "⏰ Jam: {$formattedTime} WIB\n" .
+            "📍 Tempat: Ruang BK\n\n" .
+            "Silakan datang tepat waktu ya. Terima kasih.";
 
         // Format No WA
         $noWa = $counseling->whatsapp;
@@ -132,9 +157,9 @@ class AdminController extends Controller
     public function hasilKonseling()
     {
         $requestsDone = CounselingRequest::with('user')
-                        ->where('status', 'completed')
-                        ->orderBy('updated_at', 'desc')
-                        ->get();
+            ->where('status', 'completed')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         $manualResults = DB::table('counseling_results')->orderBy('created_at', 'desc')->get();
 
@@ -161,6 +186,52 @@ class AdminController extends Controller
         ]);
 
         return back()->with('success', 'Catatan hasil konseling berhasil diarsipkan.');
+    }
+
+    // ... method index, minatKarir, dll ...
+
+    /**
+     * Simpan data kolaborasi baru
+     */
+    public function storeKolaborasi(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'deskripsi' => 'nullable|string',
+            'link' => 'nullable|url',
+        ]);
+
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            // Simpan di folder public/logos
+            $logoPath = $request->file('logo')->store('logos', 'public');
+        }
+
+        Kolaborasi::create([
+            'nama' => $request->nama,
+            'logo' => $logoPath,
+            'deskripsi' => $request->deskripsi,
+            'link' => $request->link,
+        ]);
+
+        return redirect()->back()->with('success', 'Mitra kolaborasi berhasil ditambahkan!');
+    }
+
+    /**
+     * Hapus data kolaborasi
+     */
+    public function destroyKolaborasi($id)
+    {
+        $collab = Kolaborasi::findOrFail($id);
+
+        if ($collab->logo) {
+            Storage::disk('public')->delete($collab->logo);
+        }
+
+        $collab->delete();
+
+        return redirect()->back()->with('success', 'Mitra berhasil dihapus.');
     }
 
     /* --- FITUR HOME VISIT --- */
