@@ -34,7 +34,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Digunakan oleh Siswa untuk mengirim keluhan
+     * Digunakan oleh Siswa untuk mengirim keluhan/permohonan
      */
     public function store(Request $request)
     {
@@ -46,14 +46,10 @@ class CounselingController extends Controller
             'other_category' => 'required_if:category,Lainnya', 
         ]);
 
-        // LOGIKA DIPERBAIKI: 
-        // Jika category adalah 'Lainnya', ambil dari other_category. 
-        // Jika tidak, ambil dari dropdown category.
         $finalCategory = ($request->category === 'Lainnya') 
                          ? $request->other_category 
                          : $request->category;
 
-        // Filter kata kasar sebelum disimpan
         $cleanMessage = $this->filterBadWords($request->message);
 
         CounselingRequest::create([
@@ -69,7 +65,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Update Jadwal & Redirect ke WhatsApp
+     * Update Jadwal & Redirect ke WhatsApp untuk Notifikasi
      */
     public function update(Request $request, $id)
     {
@@ -111,6 +107,28 @@ class CounselingController extends Controller
     }
 
     /**
+     * Menyelesaikan sesi yang sedang berjalan
+     */
+    public function complete($id)
+    {
+        $item = CounselingRequest::findOrFail($id);
+        $item->update(['status' => 'completed']);
+
+        return redirect()->back()->with('success', 'Sesi konseling telah berhasil diselesaikan!');
+    }
+
+    /**
+     * Menghapus data permohonan/antrean
+     */
+    public function destroy($id)
+    {
+        $item = CounselingRequest::findOrFail($id);
+        $item->delete();
+
+        return redirect()->back()->with('success', 'Data antrean berhasil dihapus.');
+    }
+
+    /**
      * Sensor Kata Kasar
      */
     private function filterBadWords($text)
@@ -126,56 +144,5 @@ class CounselingController extends Controller
         }
 
         return $text;
-    }
-
-    public function complete($id)
-    {
-        $item = CounselingRequest::findOrFail($id);
-        $item->update(['status' => 'completed']);
-
-        return redirect()->back()->with('success', 'Sesi konseling telah berhasil diselesaikan!');
-    }
-
-    public function destroy($id)
-    {
-        $item = CounselingRequest::findOrFail($id);
-        $item->delete();
-
-        return redirect()->back()->with('success', 'Data antrean berhasil dihapus.');
-    }
-
-    /**
-     * Halaman Riwayat (Route Name: admin.hasil-konseling)
-     */
-    public function hasilIndex()
-    {
-        $results = CounselingRequest::with('user')
-            ->where('status', 'completed')
-            ->orderBy('updated_at', 'desc')
-            ->get();
-
-        return view('admin.layanan.hasil-konseling', compact('results'));
-    }
-
-    public function storeHasil(Request $request)
-    {
-        $request->validate([
-            'nama_siswa' => 'required',
-            'jenis_layanan' => 'required',
-            'keterangan' => 'required',
-        ]);
-
-        CounselingRequest::create([
-            'user_id' => Auth::id(), 
-            'service_type' => $request->jenis_layanan,
-            'hasil_akhir' => $request->keterangan,
-            'status' => 'completed',
-            'message' => 'Catatan Manual: ' . $request->nama_siswa, 
-            'whatsapp' => '0', 
-            'category' => 'Lainnya',
-            'urgency' => 'Normal'
-        ]);
-
-        return redirect()->back()->with('success', 'Catatan hasil konseling berhasil disimpan!');
     }
 }

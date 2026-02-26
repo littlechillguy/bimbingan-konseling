@@ -34,7 +34,8 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('admin.hasil-konseling') }}" method="POST" class="space-y-6">
+                    {{-- Pastikan action mengarah ke rute STORE di CounselingResultController --}}
+                    <form action="{{ route('admin.hasil-konseling.store') }}" method="POST" class="space-y-6">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -60,26 +61,42 @@
                         </div>
 
                         <div class="flex justify-end">
-                            <button type="submit" class="px-10 py-4 bg-teal-600 text-white font-black rounded-2xl hover:bg-teal-700 hover:shadow-xl hover:shadow-teal-100 transition-all duration-300">
+                            <button type="submit" class="px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300">
                                 Simpan Hasil Konseling
                             </button>
                         </div>
                     </form>
                 </div>
 
+                {{-- TAMPILAN DATA HASIL --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                     @forelse($results as $res)
-                        <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition">
+                        <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition group relative">
                             <div class="flex justify-between items-start mb-4">
                                 <span class="px-3 py-1 bg-teal-50 text-teal-600 rounded-lg text-[10px] font-black uppercase tracking-tighter italic">
                                     {{ $res->jenis_layanan }}
                                 </span>
                                 <span class="text-[10px] text-gray-400 font-bold">
-                                    {{ \Carbon\Carbon::parse($res->created_at)->format('d M Y') }}
+                                    {{ $res->created_at->format('d M Y') }}
                                 </span>
                             </div>
+                            
+                            {{-- Memanggil nama_siswa langsung dari model CounselingResult --}}
                             <h4 class="font-bold text-gray-900 mb-2">{{ $res->nama_siswa }}</h4>
-                            <p class="text-sm text-gray-500 leading-relaxed line-clamp-3 italic">"{{ $res->keterangan }}"</p>
+                            
+                            {{-- Memanggil keterangan langsung --}}
+                            <p class="text-sm text-gray-500 leading-relaxed line-clamp-3 italic">
+                                "{{ $res->keterangan }}"
+                            </p>
+
+                            {{-- Tombol Hapus --}}
+                            <form action="{{ route('admin.hasil-konseling.destroy', $res->id) }}" method="POST" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Hapus data ini?')" class="text-gray-300 hover:text-red-500">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </form>
                         </div>
                     @empty
                         <div class="md:col-span-2 text-center py-10 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
