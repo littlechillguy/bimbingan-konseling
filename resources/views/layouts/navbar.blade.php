@@ -146,12 +146,12 @@
             </div>
 
             <a href="{{ route('layanan.karir') }}" class="flex items-center px-4 py-4 bg-white/5 rounded-2xl text-teal-300 font-black text-xs tracking-widest uppercase border border-white/5">
-                📊 Laporan Karir
+                Laporan Karir
             </a>
             
             @if(!auth()->check())
             <a href="{{ route('login') }}" class="flex items-center justify-center px-4 py-4 bg-teal-500 rounded-2xl text-white font-black text-xs tracking-widest uppercase shadow-lg">
-                🚀 MULAI KONSELING
+                MULAI KONSELING
             </a>
             @endif
         </div>
