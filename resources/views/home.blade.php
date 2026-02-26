@@ -176,49 +176,65 @@
         </div>
     </section>
 
-    {{-- Step by Step Section (NEW) --}}
+   {{-- Step by Step Section (UPDATED) --}}
     <section id="alur" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-black text-gray-900">Gak Pakai Ribet, Begini Caranya</h2>
+                <span class="text-teal-600 text-xs font-black uppercase tracking-[0.3em] mb-4 block">Simple Process</span>
+                <h2 class="text-4xl font-black text-gray-900 tracking-tight">Gak Pakai Ribet, Begini Caranya</h2>
+                <p class="mt-4 text-gray-500 text-sm max-w-2xl mx-auto">Dari pendaftaran hingga menemukan solusi, semua dirancang untuk kenyamanan dan privasimu sebagai siswa SMKN 43 Jakarta.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="relative text-center">
-                    <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-6 text-teal-600 shadow-inner">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 relative">
+                {{-- Konektor Garis (Hanya muncul di Desktop) --}}
+                <div class="hidden md:block absolute top-10 left-20 right-20 h-[2px] bg-gray-50 z-0"></div>
+
+                {{-- Step 1: Registrasi --}}
+                <div class="relative z-10 text-center group">
+                    <div class="w-20 h-20 bg-teal-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-teal-600 shadow-sm group-hover:bg-teal-600 group-hover:text-white transition-all duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
                     </div>
-                    <h4 class="font-bold text-gray-900 mb-2">1. Daftar Akun</h4>
-                    <p class="text-xs text-gray-500 px-4">Buat akun menggunakan NISN aktifmu.</p>
-                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                    </div>
+                    <div class="inline-block px-3 py-1 bg-teal-50 text-teal-600 text-[10px] font-black rounded-full mb-3 uppercase tracking-widest">Registrasi</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Buat Akun Siswa</h4>
+                    <p class="text-[11px] leading-relaxed text-gray-400 px-4">Gunakan <strong>NISN & Nama Lengkap</strong> sesuai data sekolah untuk verifikasi otomatis.</p>
                 </div>
-                <div class="relative text-center">
-                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600 shadow-inner">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+
+                {{-- Step 2: Chat Anonim --}}
+                <div class="relative z-10 text-center group">
+                    <div class="w-20 h-20 bg-indigo-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-indigo-600 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
                     </div>
-                    <h4 class="font-bold text-gray-900 mb-2">2. Pilih Jadwal</h4>
-                    <p class="text-xs text-gray-500 px-4">Tentukan kapan kamu ingin bertemu guru BK.</p>
-                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                    </div>
+                    <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-full mb-3 uppercase tracking-widest">Privacy First</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Curhat Anonim</h4>
+                    <p class="text-[11px] leading-relaxed text-gray-400 px-4">Malu? Gunakan fitur <strong>Chat Anonim</strong> untuk konsultasi awal tanpa perlu takut identitas terbongkar.</p>
                 </div>
-                <div class="relative text-center">
-                    <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 shadow-inner">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+
+                {{-- Step 3: Eksplorasi Karir --}}
+                <div class="relative z-10 text-center group">
+                    <div class="w-20 h-20 bg-amber-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-amber-600 shadow-sm group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
                     </div>
-                    <h4 class="font-bold text-gray-900 mb-2">3. Sesi Konseling</h4>
-                    <p class="text-xs text-gray-500 px-4">Berceritalah dengan nyaman di ruang BK.</p>
-                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                    </div>
+                    <div class="inline-block px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full mb-3 uppercase tracking-widest">Future Plan</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Eksplorasi Karir</h4>
+                    <p class="text-[11px] leading-relaxed text-gray-400 px-4">Bingung lulus mau ke mana? Cek <strong>Minat & Bakat</strong> serta konsultasikan rencana masa depanmu.</p>
                 </div>
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-inner">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+
+                {{-- Step 4: Konseling --}}
+                <div class="relative z-10 text-center group">
+                    <div class="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-rose-600 shadow-sm group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     </div>
-                    <h4 class="font-bold text-gray-900 mb-2">4. Hidup Lebih Lega</h4>
-                    <p class="text-xs text-gray-500 px-4">Keluar dengan perasaan lebih tenang & solusi.</p>
+                    <div class="inline-block px-3 py-1 bg-rose-50 text-rose-600 text-[10px] font-black rounded-full mb-3 uppercase tracking-widest">Final Step</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Sesi Konseling</h4>
+                    <p class="text-[11px] leading-relaxed text-gray-400 px-4">Jadwalkan pertemuan tatap muka untuk solusi mendalam. <strong>Hidup jadi lebih lega!</strong></p>
                 </div>
             </div>
         </div>
