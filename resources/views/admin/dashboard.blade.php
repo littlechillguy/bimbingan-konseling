@@ -43,6 +43,7 @@
 
                     {{-- Stats Grid --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Card Total Siswa --}}
                         <a href="{{ route('admin.siswa') }}" class="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-md hover:border-teal-200 transition-all">
                             <div class="absolute -right-6 -top-6 w-24 h-24 bg-teal-50 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
                             <div class="relative">
@@ -61,7 +62,8 @@
                             </div>
                         </a>
 
-                        <div class="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                        {{-- Card Antrean Pending (SEKARANG BISA DIKLIK) --}}
+                        <a href="{{ route('admin.layanan.tindak-lanjut') }}" class="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-md hover:border-orange-200 transition-all">
                             <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-50 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
                             <div class="relative">
                                 <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg shadow-orange-100">
@@ -69,10 +71,15 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Antrean Pending</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Antrean Pending</p>
+                                    <svg class="w-3 h-3 text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                    </svg>
+                                </div>
                                 <p class="text-4xl font-black text-orange-600">{{ $requests->where('status', 'pending')->count() }}</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     {{-- Table Antrean --}}
@@ -155,7 +162,9 @@
                             <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Kolaborasi Aktif</p>
                         </div>
                         <button @click="openCollabModal = true" class="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center hover:bg-teal-600 transition-all shadow-md">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                            </svg>
                         </button>
                     </div>
 
@@ -180,12 +189,16 @@
                             {{-- Floating Action Buttons (Hanya muncul saat hover) --}}
                             <div class="absolute -top-2 -right-2 hidden group-hover:flex items-center gap-1 bg-white p-1 rounded-xl shadow-lg border border-slate-100">
                                 <button @click="activeCollab = {{ json_encode($collab) }}; openEditCollabModal = true" class="p-1.5 text-teal-600 hover:bg-teal-50 rounded-lg transition">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
                                 </button>
                                 <form action="{{ route('admin.kolaborasi.destroy', $collab->id) }}" method="POST" onsubmit="return confirm('Hapus mitra ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
                                     </button>
                                 </form>
                             </div>
@@ -266,9 +279,18 @@
 </div>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
-    [x-cloak] { display: none !important; }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E2E8F0;
+        border-radius: 10px;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
 </style>
 
 <script>
@@ -302,12 +324,44 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#0F172A', padding: 12, cornerRadius: 12, displayColors: false }
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false }, ticks: { color: '#94A3B8', font: { size: 10, weight: '600' }, precision: 0 } },
-                    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 10, weight: '600' } } }
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(226, 232, 240, 0.5)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: {
+                                size: 10,
+                                weight: '600'
+                            },
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: {
+                                size: 10,
+                                weight: '600'
+                            }
+                        }
+                    }
                 }
             }
         });

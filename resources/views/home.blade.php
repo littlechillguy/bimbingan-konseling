@@ -288,7 +288,7 @@
                 <div class="group cursor-pointer">
                     <div class="relative h-72 bg-gradient-to-br from-teal-50 to-blue-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
                         {{-- Ilustrasi --}}
-                        <div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
+                        <a href="{{ route('tips.stress') }}"><div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
                             <div class="relative">
                                 <div class="absolute -top-4 -left-4 w-24 h-24 bg-teal-200/30 rounded-full blur-xl animate-pulse"></div>
                                 <svg class="w-32 h-32 text-teal-500 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,7 +296,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 9l6 6m0-6l-6 6" class="opacity-40" />
                                 </svg>
                             </div>
-                        </div>
+                        </div></a>
                         {{-- Badge Floating --}}
                         <div class="absolute bottom-6 left-6">
                             <span class="px-4 py-1.5 bg-white/80 backdrop-blur-md text-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">
@@ -313,14 +313,14 @@
                 <div class="group cursor-pointer">
                     <div class="relative h-72 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
                         {{-- Ilustrasi --}}
-                        <div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
+                        <a href="{{ route('tips.pertemanan') }}"><div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
                             <div class="relative">
                                 <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-orange-200/30 rounded-full blur-xl animate-pulse"></div>
                                 <svg class="w-32 h-32 text-orange-500 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
-                        </div>
+                        </div></a>
                         {{-- Badge Floating --}}
                         <div class="absolute bottom-6 left-6">
                             <span class="px-4 py-1.5 bg-white/80 backdrop-blur-md text-orange-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">

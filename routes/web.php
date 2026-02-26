@@ -55,6 +55,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('offline');
     });
 
+    Route::get('/tips-kesehatan-mental', function () {
+        return view('tips.stress');
+    })->name('tips.stress');
+    Route::get('/tips-pertemanan-sehat', function () {
+    return view('tips.pertemanan');
+})->name('tips.pertemanan');
+
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

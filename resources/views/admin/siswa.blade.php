@@ -59,7 +59,6 @@
                                 </td>
                                 <td class="px-8 py-5 text-sm text-slate-500">{{ $siswa->kontak_siswa ?? $siswa->email }}</td>
                                 <td class="px-8 py-5 text-center">
-                                    {{-- TOMBOL DETAIL DENGAN DATA LENGKAP --}}
                                     <button @click="s = {
                                         name: '{{ $siswa->name }}',
                                         username: '{{ $siswa->username }}',
@@ -73,7 +72,8 @@
                                         hp_siswa: '{{ $siswa->kontak_siswa ?? '-' }}',
                                         hp_ortu: '{{ $siswa->kontak_orangtua ?? '-' }}',
                                         penyakit: '{{ $siswa->riwayat_penyakit ?? 'Tidak Ada' }}',
-                                        mutasi: '{{ $siswa->is_mutasi ? 'Siswa Pindahan' : 'Siswa Reguler' }}',
+                                        is_mutasi: {{ $siswa->is_mutasi ? 'true' : 'false' }},
+                                        mutasi_text: '{{ $siswa->is_mutasi ? 'Siswa Pindahan' : 'Siswa Reguler' }}',
                                         role: '{{ strtoupper($siswa->role) }}',
                                         joined: '{{ $siswa->created_at->format('d M Y') }}'
                                     }; openModal = true" 
@@ -83,9 +83,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr>
-                                <td colspan="4" class="px-8 py-10 text-center text-slate-400">Data siswa tidak ditemukan.</td>
-                            </tr>
+                            <tr><td colspan="4" class="px-8 py-10 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">Belum ada data siswa</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -104,7 +102,12 @@
                             <div class="w-16 h-16 bg-teal-600 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg shadow-teal-100" x-text="s.name ? s.name.charAt(0) : ''"></div>
                             <div>
                                 <h3 class="text-xl font-black text-slate-900" x-text="s.name"></h3>
-                                <p class="text-xs text-teal-600 font-black uppercase tracking-widest" x-text="s.mutasi"></p>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span :class="s.is_mutasi ? 'bg-amber-100 text-amber-700' : 'bg-teal-100 text-teal-700'" 
+                                          class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" 
+                                          x-text="s.mutasi_text"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-slate-100 text-slate-500" x-text="s.role"></span>
+                                </div>
                             </div>
                         </div>
                         <button @click="openModal = false" class="text-slate-300 hover:text-slate-500 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -123,24 +126,19 @@
                         {{-- Data Pribadi --}}
                         <div class="space-y-4">
                             <h4 class="text-[10px] font-black text-teal-600 uppercase tracking-[0.2em] border-b border-teal-100 pb-2">Profil Pribadi</h4>
-                            <div><p class="text-[10px] text-slate-400 uppercase font-bold">Tempat Lahir</p><p class="text-sm font-bold text-slate-700" x-text="s.tempat_lahir"></p></div>
-                            <div><p class="text-[10px] text-slate-400 uppercase font-bold">Tanggal Lahir</p><p class="text-sm font-bold text-slate-700" x-text="s.tanggal_lahir"></p></div>
+                            <div><p class="text-[10px] text-slate-400 uppercase font-bold">Email Aktif</p><p class="text-sm font-bold text-slate-700" x-text="s.email"></p></div>
+                            <div><p class="text-[10px] text-slate-400 uppercase font-bold">TTL</p><p class="text-sm font-bold text-slate-700" x-text="s.tempat_lahir + ', ' + s.tanggal_lahir"></p></div>
                             <div><p class="text-[10px] text-slate-400 uppercase font-bold">Riwayat Penyakit</p><p class="text-sm font-bold" :class="s.penyakit !== 'Tidak Ada' ? 'text-red-500' : 'text-slate-700'" x-text="s.penyakit"></p></div>
                         </div>
 
-                        {{-- Kontak & Ortu (Full Width) --}}
-                        <div class="space-y-4 md:col-span-2 bg-slate-50 p-6 rounded-3xl border border-slate-100 mt-2">
+                        {{-- Kontak & Ortu --}}
+                        <div class="space-y-4 md:col-span-2 bg-slate-50 p-6 rounded-3xl border border-slate-100">
                             <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Kontak & Keluarga</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">Nama Orang Tua</p><p class="text-sm font-bold text-slate-700" x-text="s.ortu"></p></div>
                                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">WhatsApp Siswa</p><p class="text-sm font-bold text-slate-700" x-text="s.hp_siswa"></p></div>
                                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">WhatsApp Ortu</p><p class="text-sm font-bold text-slate-700" x-text="s.hp_ortu"></p></div>
                             </div>
-                        </div>
-
-                        <div class="md:col-span-2 flex justify-between items-center px-2">
-                            <p class="text-[10px] text-slate-400 font-medium">Terdaftar pada: <span class="text-slate-600" x-text="s.joined"></span></p>
-                            <p class="text-[10px] text-slate-400 font-medium">Hak Akses: <span class="text-teal-600 font-bold" x-text="s.role"></span></p>
                         </div>
                     </div>
                 </div>
