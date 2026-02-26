@@ -8,7 +8,6 @@
 
 <style> 
     [x-cloak] { display: none !important; } 
-    /* Kustomisasi font SweetAlert agar senada dengan UI */
     .swal2-popup { font-family: inherit !important; }
 </style>
 
@@ -27,15 +26,7 @@
         <main class="flex-1 overflow-y-auto p-6 lg:p-10">
             <div class="max-w-5xl mx-auto w-full">
                 
-                {{-- Alert Sukses (Opsional jika ingin double dengan SweetAlert) --}}
-                @if(session('success'))
-                    <div class="mb-6 p-4 bg-teal-50 text-teal-600 border border-teal-100 rounded-2xl font-bold flex items-center gap-3 shadow-sm">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                {{-- FORM INPUT --}}
+                {{-- FORM INPUT UTAMA --}}
                 <div class="bg-white border border-gray-100 rounded-[2.5rem] shadow-sm p-8 mb-10">
                     <div class="flex items-center gap-4 mb-8">
                         <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
@@ -49,9 +40,15 @@
                     <form action="{{ route('admin.home-visit.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @csrf
                         <input type="text" name="nama_siswa" required placeholder="Nama Siswa" class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                        
+                        <input type="text" name="nama_orang_tua" required placeholder="Nama Orang Tua / Wali" class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                        
                         <input type="date" name="tanggal_kunjungan" required class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
-                        <input type="text" name="alamat" required placeholder="Alamat Lengkap" class="md:col-span-2 w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
-                        <textarea name="keterangan" rows="3" required placeholder="Keterangan..." class="md:col-span-2 w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition"></textarea>
+                        
+                        <input type="text" name="alamat" required placeholder="Alamat Lengkap" class="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition">
+                        
+                        <textarea name="keterangan" rows="3" required placeholder="Keterangan hasil kunjungan..." class="md:col-span-2 w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-teal-500 outline-none transition"></textarea>
+                        
                         <div class="md:col-span-2 flex justify-end">
                             <button type="submit" class="px-8 py-3 bg-teal-600 text-white font-black rounded-xl hover:bg-teal-700 transition shadow-lg shadow-teal-100">Simpan Laporan</button>
                         </div>
@@ -63,7 +60,7 @@
                     <table class="w-full text-left">
                         <thead>
                             <tr class="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <th class="px-8 py-4">Siswa</th>
+                                <th class="px-8 py-4">Siswa & Orang Tua</th>
                                 <th class="px-8 py-4 text-center">Tanggal</th>
                                 <th class="px-8 py-4 text-center">Aksi</th>
                             </tr>
@@ -71,7 +68,10 @@
                         <tbody class="divide-y divide-gray-50">
                             @forelse($visits as $visit)
                             <tr class="hover:bg-gray-50/50 transition">
-                                <td class="px-8 py-5 text-sm font-bold text-gray-900">{{ $visit->nama_siswa }}</td>
+                                <td class="px-8 py-5">
+                                    <div class="text-sm font-bold text-gray-900">{{ $visit->nama_siswa }}</div>
+                                    <div class="text-[10px] text-teal-600 font-black uppercase tracking-tighter">Ortu: {{ $visit->nama_orang_tua ?? '-' }}</div>
+                                </td>
                                 <td class="px-8 py-5 text-center text-sm font-bold text-gray-600">
                                     {{ \Carbon\Carbon::parse($visit->tanggal_kunjungan)->format('d/m/Y') }}
                                 </td>
@@ -80,6 +80,7 @@
                                         <button @click="selectedVisit = { 
                                             id: '{{ $visit->id }}',
                                             nama: '{{ $visit->nama_siswa }}', 
+                                            ortu: '{{ $visit->nama_orang_tua }}',
                                             tgl: '{{ $visit->tanggal_kunjungan }}',
                                             alamat: '{{ $visit->alamat }}',
                                             ket: '{{ addslashes($visit->keterangan) }}'
@@ -116,8 +117,6 @@
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
          x-cloak>
         
         <div @click.away="openModal = false" class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100">
@@ -135,9 +134,15 @@
                     {{-- Mode DETAIL --}}
                     <template x-if="!isEdit">
                         <div class="space-y-4">
-                            <div>
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Siswa</label>
-                                <p class="text-sm font-bold text-gray-900" x-text="selectedVisit.nama"></p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Siswa</label>
+                                    <p class="text-sm font-bold text-gray-900" x-text="selectedVisit.nama"></p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Orang Tua</label>
+                                    <p class="text-sm font-bold text-gray-900" x-text="selectedVisit.ortu || '-'"></p>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -159,17 +164,25 @@
                     {{-- Mode EDIT --}}
                     <template x-if="isEdit">
                         <div class="space-y-4">
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Nama Siswa</label>
-                                <input type="text" name="nama_siswa" x-model="selectedVisit.nama" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Nama Siswa</label>
+                                    <input type="text" name="nama_siswa" x-model="selectedVisit.nama" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Nama Orang Tua</label>
+                                    <input type="text" name="nama_orang_tua" x-model="selectedVisit.ortu" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Tanggal</label>
-                                <input type="date" name="tanggal_kunjungan" x-model="selectedVisit.tgl" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Alamat</label>
-                                <input type="text" name="alamat" x-model="selectedVisit.alamat" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Tanggal</label>
+                                    <input type="date" name="tanggal_kunjungan" x-model="selectedVisit.tgl" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Alamat</label>
+                                    <input type="text" name="alamat" x-model="selectedVisit.alamat" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 ml-1 mb-1 block">Keterangan</label>
@@ -199,18 +212,14 @@
 </div>
 
 <script>
-/**
- * Fungsi Konfirmasi Hapus dengan SweetAlert2
- */
 function confirmDelete(button) {
     const form = button.closest('.delete-form');
-    
     Swal.fire({
         title: '<span class="font-black text-gray-900">Hapus Data?</span>',
         html: '<p class="text-sm text-gray-500 font-medium">Data kunjungan yang dihapus tidak dapat dikembalikan.</p>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#0d9488', // Teal 600
+        confirmButtonColor: '#0d9488',
         cancelButtonColor: '#f3f4f6',
         confirmButtonText: 'Ya, Hapus!',
         cancelButtonText: '<span class="text-gray-600">Batal</span>',
@@ -228,16 +237,13 @@ function confirmDelete(button) {
     })
 }
 
-/**
- * Notifikasi Sukses SweetAlert Otomatis (Jika ada session)
- */
 @if(session('success'))
     Swal.fire({
         icon: 'success',
         title: '<span class="font-black text-gray-900">Berhasil!</span>',
         text: "{{ session('success') }}",
         showConfirmButton: false,
-        timer: 2500,
+        timer: 1500, // Dipercepat menjadi 1.5 detik
         background: '#ffffff',
         customClass: {
             popup: 'rounded-[2.5rem] border border-gray-100 shadow-xl'
@@ -245,5 +251,4 @@ function confirmDelete(button) {
     });
 @endif
 </script>
-
 @endsection
