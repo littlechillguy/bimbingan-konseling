@@ -10,8 +10,10 @@
     x-data="{ 
         openModal: false, 
         openCollabModal: false, 
+        openEditCollabModal: false,
         activeMessage: '', 
-        activeName: '' 
+        activeName: '',
+        activeCollab: { id: '', nama: '', deskripsi: '', link: '' }
      }">
 
     @include('admin.partials.sidebar')
@@ -127,53 +129,44 @@
                             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                                 <div>
                                     <h2 class="text-xl font-black text-slate-900 tracking-tight">Statistik Konsultasi</h2>
-                                    {{-- Teks tahun nyesuain yang dipilih --}}
                                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
                                         Volume Aktivitas Siswa Tahun {{ $selectedYear }}
                                     </p>
                                 </div>
-
-                                {{-- DROPDOWN TAHUN BERDASARKAN DATABASE --}}
                                 <form action="{{ route('admin.dashboard') }}" method="GET" id="yearForm">
                                     <select name="year" onchange="document.getElementById('yearForm').submit()"
                                         class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer">
                                         @foreach($availableYears as $year)
-                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
-                                            Tahun {{ $year }}
-                                        </option>
+                                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>Tahun {{ $year }}</option>
                                         @endforeach
                                     </select>
                                 </form>
                             </div>
-
-                            <div class="h-[320px] w-full">
-                                <canvas id="counselingChart"></canvas>
-                            </div>
+                            <div class="h-[320px] w-full"><canvas id="counselingChart"></canvas></div>
                         </div>
                     </div>
                 </main>
 
                 {{-- SIDEBAR KOLABORASI (RIGHT) --}}
-                <aside class="w-full lg:w-[320px] bg-[#F1F5F9]/30 border-l border-slate-100 p-6 lg:p-8 space-y-8">
+                <aside class="w-full lg:w-[320px] bg-[#F1F5F9]/30 border-l border-slate-100 p-6 lg:p-8 space-y-8 h-full overflow-y-auto">
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-sm font-black text-slate-900 uppercase tracking-tighter">Mitra Industri</h2>
                             <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Kolaborasi Aktif</p>
                         </div>
                         <button @click="openCollabModal = true" class="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center hover:bg-teal-600 transition-all shadow-md">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
-                            </svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                         </button>
                     </div>
 
                     <div class="space-y-4">
                         @forelse($kolaborators ?? [] as $collab)
-                        <div class="group p-4 bg-white rounded-2xl border border-slate-100 hover:border-teal-200 transition-all">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden flex items-center justify-center border border-slate-100">
-                                    @if(isset($collab->logo) && $collab->logo)
-                                    <img src="{{ asset('storage/'.$collab->logo) }}" class="w-full h-full object-cover">
+                        <div class="group relative p-4 bg-white rounded-2xl border border-slate-100 hover:border-teal-200 hover:shadow-sm transition-all">
+                            {{-- Klik Logo/Nama Ke Link --}}
+                            <a href="{{ $collab->link ?? '#' }}" target="_blank" class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden flex items-center justify-center border border-slate-100 group-hover:border-teal-100 transition-colors">
+                                    @if($collab->logo)
+                                    <img src="{{ Storage::url($collab->logo) }}" class="w-full h-full object-cover">
                                     @else
                                     <span class="text-[10px] font-black text-slate-300 uppercase">{{ substr($collab->nama, 0, 2) }}</span>
                                     @endif
@@ -182,6 +175,19 @@
                                     <h4 class="text-xs font-black text-slate-900 truncate leading-none">{{ $collab->nama }}</h4>
                                     <p class="text-[9px] text-slate-400 mt-1 truncate">{{ $collab->deskripsi }}</p>
                                 </div>
+                            </a>
+
+                            {{-- Floating Action Buttons (Hanya muncul saat hover) --}}
+                            <div class="absolute -top-2 -right-2 hidden group-hover:flex items-center gap-1 bg-white p-1 rounded-xl shadow-lg border border-slate-100">
+                                <button @click="activeCollab = {{ json_encode($collab) }}; openEditCollabModal = true" class="p-1.5 text-teal-600 hover:bg-teal-50 rounded-lg transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                                <form action="{{ route('admin.kolaborasi.destroy', $collab->id) }}" method="POST" onsubmit="return confirm('Hapus mitra ini?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         @empty
@@ -191,25 +197,22 @@
                         @endforelse
                     </div>
                 </aside>
-
             </div>
         </div>
     </div>
 
-    {{-- MODAL DETAIL --}}
-    <div x-show="openModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak>
-        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full relative shadow-2xl" @click.away="openModal = false">
+    {{-- MODAL DETAIL PESAN --}}
+    <div x-show="openModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak x-transition>
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full relative shadow-2xl">
             <h3 class="text-xl font-black text-slate-900 mb-2" x-text="activeName"></h3>
             <p class="text-[10px] text-teal-600 font-black uppercase tracking-widest mb-6 border-b pb-4">Detail Keluhan / Masalah</p>
             <p class="text-slate-600 text-sm italic leading-relaxed" x-text="'&quot;' + activeMessage + '&quot;'"></p>
-            <button @click="openModal = false" class="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-teal-600 transition-all shadow-lg shadow-slate-200">
-                Tutup Detail
-            </button>
+            <button @click="openModal = false" class="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-teal-600 transition-all shadow-lg">Tutup Detail</button>
         </div>
     </div>
 
-    {{-- MODAL KOLABORASI --}}
-    <div x-show="openCollabModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak>
+    {{-- MODAL TAMBAH KOLABORASI --}}
+    <div x-show="openCollabModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak x-transition>
         <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 relative overflow-hidden" @click.away="openCollabModal = false">
             <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-8">Tambah Mitra Industri</h3>
             <form action="{{ route('admin.kolaborasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
@@ -223,12 +226,39 @@
                     <textarea name="deskripsi" rows="2" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="url" name="link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm" placeholder="Website URL">
-                    <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-teal-50 file:text-teal-700">
+                    <input type="url" name="link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm" placeholder="URL Website (https://..)">
+                    <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-teal-50 file:text-teal-700">
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button type="button" @click="openCollabModal = false" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 shadow-lg">Simpan Mitra</button>
+                    <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 shadow-lg transition-all">Simpan Mitra</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- MODAL EDIT KOLABORASI --}}
+    <div x-show="openEditCollabModal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak x-transition>
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full p-8 relative overflow-hidden" @click.away="openEditCollabModal = false">
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-8">Edit Mitra Industri</h3>
+            <form :action="'/admin/kolaborasi/' + activeCollab.id" method="POST" enctype="multipart/form-data" class="space-y-5">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Nama Perusahaan</label>
+                    <input type="text" name="nama" x-model="activeCollab.nama" required class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Deskripsi</label>
+                    <textarea name="deskripsi" x-model="activeCollab.deskripsi" rows="2" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="url" name="link" x-model="activeCollab.link" class="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm" placeholder="Website URL">
+                    <input type="file" name="logo" accept="image/*" class="w-full text-[10px] text-slate-500">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="openEditCollabModal = false" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-700 shadow-lg transition-all">Perbarui Mitra</button>
                 </div>
             </form>
         </div>
@@ -236,29 +266,18 @@
 </div>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #E2E8F0;
-        border-radius: 10px;
-    }
-
-    [x-cloak] {
-        display: none !important;
-    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    [x-cloak] { display: none !important; }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('counselingChart').getContext('2d');
-
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         gradient.addColorStop(0, 'rgba(13, 148, 136, 0.2)');
         gradient.addColorStop(1, 'rgba(13, 148, 136, 0.0)');
 
-        // Mengambil data dari controller
         const dataCounts = @json($counts ?? array_fill(0, 12, 0));
 
         new Chart(ctx, {
@@ -283,44 +302,12 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: '#0F172A',
-                        padding: 12,
-                        cornerRadius: 12,
-                        displayColors: false
-                    }
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#0F172A', padding: 12, cornerRadius: 12, displayColors: false }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(226, 232, 240, 0.5)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#94A3B8',
-                            font: {
-                                size: 10,
-                                weight: '600'
-                            },
-                            precision: 0
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#94A3B8',
-                            font: {
-                                size: 10,
-                                weight: '600'
-                            }
-                        }
-                    }
+                    y: { beginAtZero: true, grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false }, ticks: { color: '#94A3B8', font: { size: 10, weight: '600' }, precision: 0 } },
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 10, weight: '600' } } }
                 }
             }
         });

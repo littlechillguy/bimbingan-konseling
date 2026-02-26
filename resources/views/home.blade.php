@@ -93,7 +93,7 @@
                      }">
                     
                     <div class="relative z-10 w-full h-[400px] bg-gradient-to-br from-teal-100 to-blue-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl flex items-center justify-center">
-                         <span class="text-gray-400 font-medium italic text-center px-6">Ilustrasi: Bimbingan Konseling</span>
+                         <img src="{{ asset('asset/konseling.png') }}" alt="ILustrasi:bimbingan konseling">
                     </div>
 
                     <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-2xl flex items-center space-x-4 animate-bounce-slow z-20 min-w-[300px] border border-gray-50">
@@ -269,7 +269,7 @@
         </div>
     </section>
 
-    {{-- Info & Tips Section (NEW) --}}
+    {{-- Info & Tips Section --}}
     <section id="tips" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-end mb-12">
@@ -277,28 +277,60 @@
                     <h2 class="text-3xl font-black text-gray-900 mb-2">Tips Sehat Mental</h2>
                     <p class="text-gray-500">Bacaan singkat buat nemenin istirahatmu.</p>
                 </div>
-                <a href="#" class="text-teal-600 font-bold text-sm hover:underline">Lihat Semua</a>
+                <a href="#" class="text-teal-600 font-bold text-sm hover:underline flex items-center">
+                    Lihat Semua 
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </a>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Artikel 1 --}}
                 <div class="group cursor-pointer">
-                    <div class="h-64 bg-teal-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 group-hover:shadow-lg transition-all">
-                        <div class="w-full h-full flex items-center justify-center text-teal-200">
-                            <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.985 7.985 0 0111 4c4.418 0 8 3.582 8 8s-3.582 8-8 8a7.985 7.985 0 01-2-.804V4.804zM2 12c0-4.418 3.582-8 8-8v11.196A7.985 7.985 0 018 16c-4.418 0-8-3.582-8-8z"></path></svg>
+                    <div class="relative h-72 bg-gradient-to-br from-teal-50 to-blue-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
+                        {{-- Ilustrasi --}}
+                        <div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
+                            <div class="relative">
+                                <div class="absolute -top-4 -left-4 w-24 h-24 bg-teal-200/30 rounded-full blur-xl animate-pulse"></div>
+                                <svg class="w-32 h-32 text-teal-500 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 9l6 6m0-6l-6 6" class="opacity-40" />
+                                </svg>
+                            </div>
+                        </div>
+                        {{-- Badge Floating --}}
+                        <div class="absolute bottom-6 left-6">
+                            <span class="px-4 py-1.5 bg-white/80 backdrop-blur-md text-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                5 Menit Baca
+                            </span>
                         </div>
                     </div>
                     <span class="px-4 py-1 bg-blue-100 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Self Care</span>
-                    <h4 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Cara Mengatur Stress Saat Musim Ujian</h4>
-                    <p class="text-gray-500 text-sm mt-2">Jangan biarkan ujian merusak kesehatan mentalmu. Coba teknik 5-4-3-2-1 ini...</p>
+                    <h4 class="text-2xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Cara Mengatur Stress Saat Musim Ujian</h4>
+                    <p class="text-gray-500 text-sm mt-2 leading-relaxed">Jangan biarkan ujian merusak kesehatan mentalmu. Coba teknik grounding 5-4-3-2-1 untuk tetap fokus dan tenang...</p>
                 </div>
+
+                {{-- Artikel 2 --}}
                 <div class="group cursor-pointer">
-                    <div class="h-64 bg-orange-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 group-hover:shadow-lg transition-all">
-                        <div class="w-full h-full flex items-center justify-center text-orange-200">
-                            <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div class="relative h-72 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2">
+                        {{-- Ilustrasi --}}
+                        <div class="absolute inset-0 flex items-center justify-center p-12 transition-transform duration-500 group-hover:scale-110">
+                            <div class="relative">
+                                <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-orange-200/30 rounded-full blur-xl animate-pulse"></div>
+                                <svg class="w-32 h-32 text-orange-500 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        {{-- Badge Floating --}}
+                        <div class="absolute bottom-6 left-6">
+                            <span class="px-4 py-1.5 bg-white/80 backdrop-blur-md text-orange-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                Hot Topic
+                            </span>
                         </div>
                     </div>
                     <span class="px-4 py-1 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">Social Life</span>
-                    <h4 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Membangun Pertemanan yang Sehat di Sekolah</h4>
-                    <p class="text-gray-500 text-sm mt-2">Gimana sih caranya bedain teman yang suportif sama yang toxic?</p>
+                    <h4 class="text-2xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Membangun Pertemanan yang Sehat</h4>
+                    <p class="text-gray-500 text-sm mt-2 leading-relaxed">Lingkungan pertemanan sangat berpengaruh pada mood. Kenali tanda-tanda support system yang baik untukmu.</p>
                 </div>
             </div>
         </div>

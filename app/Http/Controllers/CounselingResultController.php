@@ -30,6 +30,24 @@ class CounselingResultController extends Controller
         return redirect()->back()->with('success', 'Catatan berhasil disimpan!');
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_siswa' => 'required|string|max:255',
+            'jenis_layanan' => 'required',
+            'keterangan' => 'required|min:5',
+        ]);
+
+        $result = CounselingResult::findOrFail($id);
+        $result->update([
+            'nama_siswa' => $request->nama_siswa,
+            'jenis_layanan' => $request->jenis_layanan,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()->back()->with('success', 'Catatan berhasil diperbarui!');
+    }
+
     public function destroy($id)
     {
         CounselingResult::findOrFail($id)->delete();

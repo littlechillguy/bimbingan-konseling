@@ -4,8 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatAnonimController;
 use App\Http\Controllers\CareerExplorationController;
-use App\Http\Controllers\CounselingController; 
-use App\Http\Controllers\CounselingResultController; 
+use App\Http\Controllers\CounselingController;
+use App\Http\Controllers\CounselingResultController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,8 +13,13 @@ use Illuminate\Support\Facades\Route;
 | Public Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () { return view('home'); })->name('home');
-Route::get('/layanan', function () { return view('layanan'); })->name('layanan');
+
+Route::get('/', function () {
+    return view('home');
+})->name('home');
+Route::get('/layanan', function () {
+    return view('layanan');
+})->name('layanan');
 
 /*
 |--------------------------------------------------------------------------
@@ -24,22 +29,30 @@ Route::get('/layanan', function () { return view('layanan'); })->name('layanan')
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('layanan')->name('layanan.')->group(function () {
-        
+
         // --- FITUR KONSELING UMUM ---
-        Route::get('/konseling', function () { return view('layanan.konseling'); })->name('konseling');
+        Route::get('/konseling', function () {
+            return view('layanan.konseling');
+        })->name('konseling');
         Route::post('/konseling', [CounselingController::class, 'store'])->name('konseling.store');
-        
+
         // --- BIMBINGAN KARIR ---
-        Route::get('/bimbingan-karir', function () { return view('layanan.karir'); })->name('karir');
+        Route::get('/bimbingan-karir', function () {
+            return view('layanan.karir');
+        })->name('karir');
         Route::post('/bimbingan-karir', [CareerExplorationController::class, 'store'])->name('karir.store');
 
         // --- CHAT ANONIM ---
         Route::get('/chat-anonim', [ChatAnonimController::class, 'index'])->name('chat-anonim');
         Route::post('/chat-anonim', [ChatAnonimController::class, 'store'])->name('chat-anonim.store');
-        
+
         // --- LAYANAN LAINNYA ---
-        Route::get('/konseling-online', function () { return view('layanan.online'); })->name('online');
-        Route::get('/konseling-offline', function () { return view('layanan.offline'); })->name('offline');
+        Route::get('/konseling-online', function () {
+            return view('layanan.online');
+        })->name('online');
+        Route::get('/konseling-offline', function () {
+            return view('layanan.offline');
+        })->name('offline');
     });
 
     // Profile Management
@@ -54,16 +67,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     // Dashboard Admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     // Manajemen Siswa
     Route::get('/siswa', [AdminController::class, 'siswaIndex'])->name('siswa');
     Route::get('/siswa/{id}', [AdminController::class, 'siswaShow'])->name('siswa.show');
-    
-    // Fitur Kolaborasi
+
+    // Fitur Kolaborasi / Mitra Industri
     Route::post('/kolaborasi', [AdminController::class, 'storeKolaborasi'])->name('kolaborasi.store');
+    Route::put('/kolaborasi/{id}', [AdminController::class, 'updateKolaborasi'])->name('kolaborasi.update'); // Tambah ini
     Route::delete('/kolaborasi/{id}', [AdminController::class, 'destroyKolaborasi'])->name('kolaborasi.destroy');
 
     // --- FITUR UTAMA KONSELING (ANTREAN/TINDAK LANJUT) ---
@@ -72,10 +86,13 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::patch('/counseling/{id}/complete', [CounselingController::class, 'complete'])->name('counseling.complete');
     Route::delete('/counseling/{id}', [CounselingController::class, 'destroy'])->name('counseling.delete');
 
-    // --- HASIL KONSELING (RIWAYAT/ARSIP) ---
-    // Pastikan rute POST mengarah ke function store yang kita perbaiki tanpa user_id
+    /// --- HASIL KONSELING (RIWAYAT/ARSIP) ---
     Route::get('/hasil-konseling', [CounselingResultController::class, 'index'])->name('hasil-konseling');
     Route::post('/hasil-konseling', [CounselingResultController::class, 'store'])->name('hasil-konseling.store');
+
+    // TAMBAHKAN BARIS INI:
+    Route::put('/hasil-konseling/{id}', [CounselingResultController::class, 'update'])->name('hasil-konseling.update');
+
     Route::delete('/hasil-konseling/{id}', [CounselingResultController::class, 'destroy'])->name('hasil-konseling.destroy');
 
     // Manajemen Jadwal & Home Visit

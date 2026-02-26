@@ -64,12 +64,12 @@ class AdminController extends Controller
         $kolaborators = Kolaborasi::latest()->get();
 
         return view('admin.dashboard', compact(
-            'requests', 
-            'scheduledRequests', 
-            'totalSiswa', 
-            'kolaborators', 
+            'requests',
+            'scheduledRequests',
+            'totalSiswa',
+            'kolaborators',
             'counts',
-            'availableYears', 
+            'availableYears',
             'selectedYear'
         ));
     }
@@ -215,6 +215,29 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Mitra kolaborasi berhasil ditambahkan!');
     }
 
+    public function updateKolaborasi(Request $request, $id)
+    {
+        $collab = Kolaborasi::findOrFail($id); // Sesuaikan nama model Anda
+
+        $data = $request->validate([
+            'nama' => 'required',
+            'deskripsi' => 'nullable',
+            'link' => 'nullable|url',
+            'logo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+
+        if ($request->hasFile('logo')) {
+            // Hapus logo lama jika ada
+            if ($collab->logo) {
+                Storage::disk('public')->delete($collab->logo);
+            }
+            $data['logo'] = $request->file('logo')->store('kolaborasi', 'public');
+        }
+
+        $collab->update($data);
+        return back()->with('success', 'Mitra berhasil diperbarui');
+    }
+
     public function destroyKolaborasi($id)
     {
         $collab = Kolaborasi::findOrFail($id);
@@ -222,7 +245,7 @@ class AdminController extends Controller
             Storage::disk('public')->delete($collab->logo);
         }
         $collab->delete();
-        return redirect()->back()->with('success', 'Mitra berhasil dihapus.');
+        return back()->with('success', 'Mitra berhasil dihapus');
     }
 
     public function homeVisit()
@@ -232,49 +255,49 @@ class AdminController extends Controller
     }
 
     public function storeHomeVisit(Request $request)
-{
-    $request->validate([
-        'nama_siswa' => 'required|string|max:255',
-        'nama_orang_tua' => 'required|string|max:255', // Tambahkan validasi
-        'tanggal_kunjungan' => 'required|date',
-        'alamat' => 'required',
-        'keterangan' => 'required',
-    ]);
+    {
+        $request->validate([
+            'nama_siswa' => 'required|string|max:255',
+            'nama_orang_tua' => 'required|string|max:255', // Tambahkan validasi
+            'tanggal_kunjungan' => 'required|date',
+            'alamat' => 'required',
+            'keterangan' => 'required',
+        ]);
 
-    DB::table('home_visits')->insert([
-        'nama_siswa' => $request->nama_siswa,
-        'nama_orang_tua' => $request->nama_orang_tua, // Tambahkan ini
-        'tanggal_kunjungan' => $request->tanggal_kunjungan,
-        'alamat' => $request->alamat,
-        'keterangan' => $request->keterangan,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+        DB::table('home_visits')->insert([
+            'nama_siswa' => $request->nama_siswa,
+            'nama_orang_tua' => $request->nama_orang_tua, // Tambahkan ini
+            'tanggal_kunjungan' => $request->tanggal_kunjungan,
+            'alamat' => $request->alamat,
+            'keterangan' => $request->keterangan,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-    return redirect()->back()->with('success', 'Data Home Visit berhasil disimpan!');
-}
+        return redirect()->back()->with('success', 'Data Home Visit berhasil disimpan!');
+    }
 
-public function updateHomeVisit(Request $request, $id)
-{
-    $request->validate([
-        'nama_siswa' => 'required|string|max:255',
-        'nama_orang_tua' => 'required|string|max:255', // Tambahkan validasi
-        'tanggal_kunjungan' => 'required|date',
-        'alamat' => 'required',
-        'keterangan' => 'required',
-    ]);
+    public function updateHomeVisit(Request $request, $id)
+    {
+        $request->validate([
+            'nama_siswa' => 'required|string|max:255',
+            'nama_orang_tua' => 'required|string|max:255', // Tambahkan validasi
+            'tanggal_kunjungan' => 'required|date',
+            'alamat' => 'required',
+            'keterangan' => 'required',
+        ]);
 
-    DB::table('home_visits')->where('id', $id)->update([
-        'nama_siswa' => $request->nama_siswa,
-        'nama_orang_tua' => $request->nama_orang_tua, // Tambahkan ini
-        'tanggal_kunjungan' => $request->tanggal_kunjungan,
-        'alamat' => $request->alamat,
-        'keterangan' => $request->keterangan,
-        'updated_at' => now(),
-    ]);
+        DB::table('home_visits')->where('id', $id)->update([
+            'nama_siswa' => $request->nama_siswa,
+            'nama_orang_tua' => $request->nama_orang_tua, // Tambahkan ini
+            'tanggal_kunjungan' => $request->tanggal_kunjungan,
+            'alamat' => $request->alamat,
+            'keterangan' => $request->keterangan,
+            'updated_at' => now(),
+        ]);
 
-    return redirect()->back()->with('success', 'Data Home Visit berhasil diperbarui!');
-}
+        return redirect()->back()->with('success', 'Data Home Visit berhasil diperbarui!');
+    }
 
     public function destroyHomeVisit($id)
     {
