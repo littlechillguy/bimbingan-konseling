@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- Hero Section --}}
-    <section class="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-32">
+    <section id="top" class="relative overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-32">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
             <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-teal-50 rounded-full blur-3xl opacity-60"></div>
             <div class="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-blue-50 rounded-full blur-3xl opacity-60"></div>
@@ -32,7 +32,6 @@
 
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         @auth
-                            {{-- BUTTON UTAMA: LAPORAN KARIR --}}
                             <div class="relative group">
                                 <div class="absolute -top-3 -right-2 z-20">
                                     <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg uppercase tracking-wider animate-bounce">
@@ -48,7 +47,6 @@
                                 </a>
                             </div>
 
-                            {{-- BUTTON SEKUNDER: LAYANAN --}}
                             <a href="{{ url('/layanan') }}" class="px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold hover:bg-gray-50 hover:border-teal-200 transition-all flex items-center justify-center group">
                                 Masuk ke Layanan
                                 <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +76,6 @@
                     </div>
                 </div>
 
-                {{-- Kolom Ilustrasi dengan Review yang Berubah-ubah --}}
                 <div class="flex-1 relative w-full max-w-[500px] lg:max-w-none" 
                      x-data="{ 
                         activeComment: 0,
@@ -95,12 +92,10 @@
                         }
                      }">
                     
-                    {{-- Gambar Ilustrasi --}}
                     <div class="relative z-10 w-full h-[400px] bg-gradient-to-br from-teal-100 to-blue-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl flex items-center justify-center">
                          <span class="text-gray-400 font-medium italic text-center px-6">Ilustrasi: Bimbingan Konseling</span>
                     </div>
 
-                    {{-- Floating Comment Card (Review) --}}
                     <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-2xl flex items-center space-x-4 animate-bounce-slow z-20 min-w-[300px] border border-gray-50">
                         <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,8 +176,56 @@
         </div>
     </section>
 
+    {{-- Step by Step Section (NEW) --}}
+    <section id="alur" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-black text-gray-900">Gak Pakai Ribet, Begini Caranya</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-6 text-teal-600 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">1. Daftar Akun</h4>
+                    <p class="text-xs text-gray-500 px-4">Buat akun menggunakan NISN aktifmu.</p>
+                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">2. Pilih Jadwal</h4>
+                    <p class="text-xs text-gray-500 px-4">Tentukan kapan kamu ingin bertemu guru BK.</p>
+                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+                <div class="relative text-center">
+                    <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">3. Sesi Konseling</h4>
+                    <p class="text-xs text-gray-500 px-4">Berceritalah dengan nyaman di ruang BK.</p>
+                    <div class="hidden md:block absolute top-10 -right-4 text-teal-200">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">4. Hidup Lebih Lega</h4>
+                    <p class="text-xs text-gray-500 px-4">Keluar dengan perasaan lebih tenang & solusi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- Testimonial Section --}}
-    <section class="py-24 bg-white overflow-hidden">
+    <section id="testimoni" class="py-24 bg-[#F8FAFC] overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Apa Kata Mereka?</h2>
@@ -190,7 +233,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="p-8 rounded-[2rem] bg-gray-50 border border-gray-100">
+                <div class="p-8 rounded-[2rem] bg-white border border-gray-100">
                     <p class="text-gray-700 leading-relaxed mb-6 italic">"Awalnya ragu mau curhat, tapi ternyata gurunya asik banget dan solutif. Masalah belajar aku jadi lebih terarah."</p>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">AS</div>
@@ -212,7 +255,7 @@
                     </div>
                 </div>
 
-                <div class="p-8 rounded-[2rem] bg-gray-50 border border-gray-100">
+                <div class="p-8 rounded-[2rem] bg-white border border-gray-100">
                     <p class="text-gray-700 leading-relaxed mb-6 italic">"Privasi benar-benar terjaga. Gak takut bocor ke mana-mana. Sekarang jadi lebih tenang belajarnya."</p>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">BP</div>
@@ -226,8 +269,43 @@
         </div>
     </section>
 
+    {{-- Info & Tips Section (NEW) --}}
+    <section id="tips" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 mb-2">Tips Sehat Mental</h2>
+                    <p class="text-gray-500">Bacaan singkat buat nemenin istirahatmu.</p>
+                </div>
+                <a href="#" class="text-teal-600 font-bold text-sm hover:underline">Lihat Semua</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="group cursor-pointer">
+                    <div class="h-64 bg-teal-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 group-hover:shadow-lg transition-all">
+                        <div class="w-full h-full flex items-center justify-center text-teal-200">
+                            <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.985 7.985 0 0111 4c4.418 0 8 3.582 8 8s-3.582 8-8 8a7.985 7.985 0 01-2-.804V4.804zM2 12c0-4.418 3.582-8 8-8v11.196A7.985 7.985 0 018 16c-4.418 0-8-3.582-8-8z"></path></svg>
+                        </div>
+                    </div>
+                    <span class="px-4 py-1 bg-blue-100 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Self Care</span>
+                    <h4 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Cara Mengatur Stress Saat Musim Ujian</h4>
+                    <p class="text-gray-500 text-sm mt-2">Jangan biarkan ujian merusak kesehatan mentalmu. Coba teknik 5-4-3-2-1 ini...</p>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="h-64 bg-orange-50 rounded-[2.5rem] mb-6 overflow-hidden border border-gray-100 group-hover:shadow-lg transition-all">
+                        <div class="w-full h-full flex items-center justify-center text-orange-200">
+                            <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                        </div>
+                    </div>
+                    <span class="px-4 py-1 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">Social Life</span>
+                    <h4 class="text-xl font-bold text-gray-900 mt-4 group-hover:text-teal-600 transition-colors">Membangun Pertemanan yang Sehat di Sekolah</h4>
+                    <p class="text-gray-500 text-sm mt-2">Gimana sih caranya bedain teman yang suportif sama yang toxic?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- FAQ Section --}}
-    <section class="py-24 bg-[#F8FAFC]">
+    <section id="faq" class="py-24 bg-[#F8FAFC]">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-bold text-gray-900">Sering Ditanyakan</h2>
@@ -258,7 +336,7 @@
     </section>
 
     {{-- CTA Final Section --}}
-    <section class="py-20 bg-white">
+    <section id="gabung" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-gradient-to-r from-teal-600 to-emerald-500 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-teal-200">
                 <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
@@ -279,6 +357,12 @@
 
 @push('styles')
 <style>
+    /* Smooth Scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Mencegah tabrakan dengan navbar fixed */
+    section[id] { scroll-margin-top: 100px; }
+
     /* Animasi Shimmer untuk Button Karir */
     @keyframes shimmer {
         100% { transform: skew-x(-30deg) translateX(250%); }
@@ -287,7 +371,7 @@
         animation: shimmer 2.5s infinite;
     }
 
-    /* Animasi Bouncing Slow untuk Gambar/Elemen Visual */
+    /* Animasi Bouncing Slow */
     @keyframes bounce-slow {
         0%, 100% { transform: translateY(-5%); }
         50% { transform: translateY(0); }
@@ -305,7 +389,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hide element before Alpine.js load */
     [x-cloak] { display: none !important; }
 </style>
 @endpush
