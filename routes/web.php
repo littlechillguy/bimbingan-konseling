@@ -72,16 +72,17 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // --- FITUR UTAMA KONSELING (TINDAK LANJUT) ---
     Route::get('/layanan/tindak-lanjut', [CounselingController::class, 'tindakLanjut'])->name('layanan.tindak-lanjut');
     
-    // Perbaikan: Gunakan PUT untuk update data (Konfirmasi jadwal/kirim WA)
+    // Konfirmasi jadwal/kirim WA
     Route::put('/counseling/{id}/update', [CounselingController::class, 'update'])->name('counseling.update');
     
-    // Perbaikan: Gunakan PATCH untuk mengubah satu status (Selesaikan sesi)
+    // Selesaikan sesi (Sesi yang sudah dijadwalkan menjadi Completed)
     Route::patch('/counseling/{id}/complete', [CounselingController::class, 'complete'])->name('counseling.complete');
     
+    // Hapus data antrean
     Route::delete('/counseling/{id}', [CounselingController::class, 'destroy'])->name('counseling.delete');
 
     // --- HASIL KONSELING (RIWAYAT) ---
-    // Perbaikan: Nama rute disesuaikan agar admin.counseling.hasil bisa terpanggil
+    // Dipastikan name('hasil-konseling') sesuai dengan link di Blade Admin
     Route::get('/hasil-konseling', [CounselingController::class, 'hasilIndex'])->name('hasil-konseling');
     Route::post('/hasil-konseling', [CounselingController::class, 'storeHasil'])->name('counseling.store-hasil');
 
@@ -96,7 +97,7 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::get('/minat-karir', [AdminController::class, 'minatKarir'])->name('minat-karir');
     Route::delete('/minat-karir/{id}', [AdminController::class, 'destroyMinatKarir'])->name('minat-karir.destroy');
 
-    // Chat Anonim Management (Admin Side)
+    // Chat Anonim Management
     Route::get('/chat', [AdminController::class, 'chatIndex'])->name('chat');
     Route::patch('/chat/{id}/read', [AdminController::class, 'chatRead'])->name('chat.read');
     Route::delete('/chat/{id}', [AdminController::class, 'chatDestroy'])->name('chat.delete');

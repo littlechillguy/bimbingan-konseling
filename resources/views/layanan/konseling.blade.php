@@ -28,7 +28,6 @@
             {{-- Form Card --}}
             <div class="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-xl shadow-slate-200/50 overflow-hidden">
                 <div class="p-6 md:p-12">
-                    {{-- PERUBAHAN KRUSIAL: Action diarahkan ke route POST yang baru --}}
                     <form action="{{ route('layanan.konseling.store') }}" method="POST" class="space-y-10">
                         @csrf
                         
@@ -44,16 +43,24 @@
                             <div class="grid grid-cols-1 gap-6">
                                 <div class="space-y-2">
                                     <label class="block text-sm font-bold text-slate-700 ml-1">Kategori Masalah</label>
-                                    <select name="category" required class="w-full px-6 py-4 bg-slate-50 border-slate-100 focus:border-emerald-500 focus:bg-white rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none appearance-none font-medium text-slate-600">
+                                    <select name="category" id="categorySelect" required class="w-full px-6 py-4 bg-slate-50 border-slate-100 focus:border-emerald-500 focus:bg-white rounded-2xl focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none appearance-none font-medium text-slate-600">
                                         <option value="" disabled selected>Pilih kategori...</option>
                                         <option value="Kesehatan Mental">Kesehatan Mental (Kecemasan, Stres, dll)</option>
+                                        <option value="Kesehatan Fisik">Kesehatan Fisik</option>
                                         <option value="Masalah Keluarga">Masalah Keluarga / Personal</option>
                                         <option value="Kesulitan Belajar">Kesulitan Belajar Berat</option>
                                         <option value="Trauma">Trauma / Pengalaman Buruk</option>
                                         <option value="Rencana Karir">Rencana Karir</option>
-                                        <option value="Lainnya">Lainnya</option>
+                                        <option value="Lainnya">Lainnya (Tulis Sendiri)</option>
                                     </select>
                                     @error('category') <p class="text-red-500 text-xs font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                {{-- Input Tambahan "Lainnya" --}}
+                                <div id="otherCategoryWrapper" class="hidden space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                    <label class="block text-sm font-bold text-emerald-700 ml-1 italic">Sebutkan kategori masalah Anda:</label>
+                                    <input type="text" name="other_category" id="otherCategoryInput" placeholder="Misal: Masalah Perundungan (Bullying)" 
+                                        class="w-full px-6 py-4 bg-emerald-50/30 border-2 border-emerald-100 focus:border-emerald-500 focus:bg-white rounded-2xl outline-none transition-all font-medium text-slate-700">
                                 </div>
                                 
                                 <div class="space-y-2">
@@ -155,4 +162,27 @@
             </div>
         </div>
     </div>
+
+    {{-- Script Interaktif untuk Kategori Lainnya --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorySelect = document.getElementById('categorySelect');
+            const otherWrapper = document.getElementById('otherCategoryWrapper');
+            const otherInput = document.getElementById('otherCategoryInput');
+
+            categorySelect.addEventListener('change', function() {
+                if (this.value === 'Lainnya') {
+                    // Tampilkan input tambahan
+                    otherWrapper.classList.remove('hidden');
+                    otherInput.setAttribute('required', 'required');
+                    otherInput.focus();
+                } else {
+                    // Sembunyikan dan hapus required agar tidak mengganggu validasi
+                    otherWrapper.classList.add('hidden');
+                    otherInput.removeAttribute('required');
+                    otherInput.value = '';
+                }
+            });
+        });
+    </script>
 </x-app-layout>

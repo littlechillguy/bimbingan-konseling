@@ -34,7 +34,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Digunakan oleh Siswa untuk mengirim keluhan (dengan sensor kata kasar)
+     * Digunakan oleh Siswa untuk mengirim keluhan
      */
     public function store(Request $request)
     {
@@ -43,14 +43,22 @@ class CounselingController extends Controller
             'urgency' => 'required',
             'whatsapp' => 'required|numeric',
             'message' => 'required|min:4',
+            'other_category' => 'required_if:category,Lainnya', 
         ]);
+
+        // LOGIKA DIPERBAIKI: 
+        // Jika category adalah 'Lainnya', ambil dari other_category. 
+        // Jika tidak, ambil dari dropdown category.
+        $finalCategory = ($request->category === 'Lainnya') 
+                         ? $request->other_category 
+                         : $request->category;
 
         // Filter kata kasar sebelum disimpan
         $cleanMessage = $this->filterBadWords($request->message);
 
         CounselingRequest::create([
             'user_id' => Auth::id(),
-            'category' => $request->category,
+            'category' => $finalCategory, 
             'urgency' => $request->urgency,
             'whatsapp' => $request->whatsapp, 
             'message' => $cleanMessage,
@@ -61,14 +69,12 @@ class CounselingController extends Controller
     }
 
     /**
-     * Proses ke WA & Ubah status ke Scheduled
-     * PERBAIKAN: Nama input disesuaikan dengan Blade (service_type, scheduled_date, scheduled_time)
+     * Update Jadwal & Redirect ke WhatsApp
      */
     public function update(Request $request, $id)
     {
         $item = CounselingRequest::with('user')->findOrFail($id);
 
-        // Validasi harus sesuai dengan atribut 'name' di form Blade Anda
         $request->validate([
             'service_type' => 'required',
             'scheduled_date' => 'required|date',
@@ -94,7 +100,6 @@ class CounselingController extends Controller
                  "Jam: *{$jam} WIB*\n\n" .
                  "Mohon hadir di ruang BK tepat waktu. Terima kasih.";
 
-        // Format Nomor WA (Menghapus karakter non-digit dan konversi ke 62)
         $noWa = preg_replace('/[^0-9]/', '', $item->whatsapp);
         if (str_starts_with($noWa, '0')) {
             $noWa = '62' . substr($noWa, 1);
@@ -106,7 +111,7 @@ class CounselingController extends Controller
     }
 
     /**
-     * Fungsi Sensor Kata Kasar
+     * Sensor Kata Kasar
      */
     private function filterBadWords($text)
     {
@@ -123,9 +128,6 @@ class CounselingController extends Controller
         return $text;
     }
 
-    /**
-     * Selesaikan Sesi
-     */
     public function complete($id)
     {
         $item = CounselingRequest::findOrFail($id);
@@ -134,9 +136,6 @@ class CounselingController extends Controller
         return redirect()->back()->with('success', 'Sesi konseling telah berhasil diselesaikan!');
     }
 
-    /**
-     * Hapus Antrean
-     */
     public function destroy($id)
     {
         $item = CounselingRequest::findOrFail($id);
@@ -146,22 +145,18 @@ class CounselingController extends Controller
     }
 
     /**
-     * Halaman Riwayat Hasil Akhir
+     * Halaman Riwayat (Route Name: admin.hasil-konseling)
      */
     public function hasilIndex()
     {
         $results = CounselingRequest::with('user')
             ->where('status', 'completed')
-            ->whereNotNull('hasil_akhir')
             ->orderBy('updated_at', 'desc')
             ->get();
 
         return view('admin.layanan.hasil-konseling', compact('results'));
     }
 
-    /**
-     * Simpan Catatan Hasil
-     */
     public function storeHasil(Request $request)
     {
         $request->validate([
