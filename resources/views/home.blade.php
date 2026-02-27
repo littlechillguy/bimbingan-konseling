@@ -47,7 +47,7 @@
                                 </a>
                             </div>
 
-                            <a href="{{ url('/layanan') }}" class="px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold hover:bg-gray-50 hover:border-teal-200 transition-all flex items-center justify-center group">
+                            <a href="{{ route('layanan') }}" class="px-8 py-4 bg-white text-gray-700 border-2 border-gray-100 rounded-2xl font-bold hover:bg-gray-50 hover:border-teal-200 transition-all flex items-center justify-center group">
                                 Masuk ke Layanan
                                 <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
