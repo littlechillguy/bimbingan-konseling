@@ -10,9 +10,11 @@
             @endif
             
             <div class="mb-8 flex flex-col gap-4">
-                <a href="{{ url()->previous() }}" class="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors w-fit">
-                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm group-hover:bg-blue-50 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                <a href="{{ route('layanan') }}" class="group flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors w-fit">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                        </svg>
                     </div>
                     <span class="text-sm font-bold tracking-wide">Kembali ke Layanan</span>
                 </a>

@@ -27,8 +27,8 @@
                     <li><a href="{{ route('layanan.chat-anonim') }}" class="hover:text-teal-600 transition-colors flex items-center gap-2">
                         <span class="w-1 h-1 bg-gray-200 rounded-full"></span>Chat Anonim</a>
                     </li>
-                    <li><a href="#" class="hover:text-teal-600 transition-colors flex items-center gap-2">
-                        <span class="w-1 h-1 bg-gray-200 rounded-full"></span>Informasi Karir</a>
+                    <li><a href="{{ route('layanan.karir') }}" class="hover:text-teal-600 transition-colors flex items-center gap-2">
+                        <span class="w-1 h-1 bg-gray-200 rounded-full"></span>Eksplorasi Karir</a>
                     </li>
                 </ul>
             </div>

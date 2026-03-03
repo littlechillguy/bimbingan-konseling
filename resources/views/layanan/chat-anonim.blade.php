@@ -32,32 +32,34 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col items-center">
 
-    <header class="w-full max-w-2xl px-6 pt-6 md:pt-10 flex flex-col gap-8">
-        <div class="flex items-center justify-between">
-            <a href="{{ url('/layanan') }}" class="inline-flex items-center gap-2 text-gray-400 hover:text-teal-600 transition-all duration-300 group">
-                <div class="p-2 rounded-xl group-hover:bg-teal-50 transition-colors">
-                    <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </div>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block">Kembali</span>
-            </a>
-
-            <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Sistem Anonim Aktif</span>
+<header class="w-full max-w-2xl px-6 pt-6 md:pt-10 flex flex-col gap-8">
+    <div class="flex items-center justify-between">
+        {{-- Tombol Kembali yang diperbarui sesuai style Layanan Konseling --}}
+        <a href="{{ route('layanan') }}" class="group flex items-center gap-3 text-slate-500 hover:text-teal-600 transition-all duration-300 w-fit">
+            <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:bg-teal-50 group-hover:text-teal-600 group-hover:border-teal-100 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                </svg>
             </div>
-        </div>
+            <span class="text-[11px] font-black uppercase tracking-[0.2em]">Kembali ke Layanan</span>
+        </a>
 
-        <div class="text-center space-y-3">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-balance leading-tight">
-                Sampaikan sesuatu <span class="text-teal-600 italic">tanpa ragu.</span>
-            </h1>
-            <p class="text-gray-400 text-xs md:text-sm max-w-[280px] md:max-w-xs mx-auto font-medium leading-relaxed">
-                Ceritakan keresahanmu. Pesan akan disensor otomatis jika terdapat kata kasar untuk menjaga kenyamanan bersama.
-            </p>
+        {{-- Status Anonim --}}
+        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+            <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Sistem Anonim Aktif</span>
         </div>
-    </header>
+    </div>
+
+    <div class="text-center space-y-3">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-balance leading-tight">
+            Sampaikan sesuatu <span class="text-teal-600 italic">tanpa ragu.</span>
+        </h1>
+        <p class="text-gray-400 text-xs md:text-sm max-w-[280px] md:max-w-xs mx-auto font-medium leading-relaxed">
+            Ceritakan keresahanmu. Pesan akan disensor otomatis jika terdapat kata kasar.
+        </p>
+    </div>
+</header>
 
     <main class="w-full max-w-lg px-6 mt-8 md:mt-12 mb-16 flex-1 flex flex-col">
         

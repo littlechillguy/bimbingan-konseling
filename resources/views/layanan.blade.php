@@ -159,10 +159,10 @@
                 class="flex flex-col items-end gap-3 mb-2"
                 style="display: none;">
 
-                <a href="https://wa.me/6281234567890" target="_blank" class="bg-white hover:bg-emerald-50 text-gray-900 px-6 py-4 rounded-2xl shadow-2xl border border-emerald-100 flex items-center gap-3 transition-all active:scale-95 group">
+                <a href="https://wa.me/6281584554363" target="_blank" class="bg-white hover:bg-emerald-50 text-gray-900 px-6 py-4 rounded-2xl shadow-2xl border border-emerald-100 flex items-center gap-3 transition-all active:scale-95 group">
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Hubungi Guru BK</span>
-                        <span class="text-sm font-bold">Ibu Sari, S.Pd</span>
+                        <span class="text-sm font-bold">Bu Yanah</span>
                     </div>
                     <div class="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

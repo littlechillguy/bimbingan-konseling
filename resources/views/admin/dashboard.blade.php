@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('title', 'Admin Dashboard - SMKN 43 JAKARTA')
 
 @section('content')

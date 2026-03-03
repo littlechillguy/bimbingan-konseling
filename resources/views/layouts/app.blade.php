@@ -49,35 +49,32 @@
 
 <body class="bg-[#FCFCFC] text-gray-900 antialiased selection:bg-teal-100 selection:text-teal-900">
 
-    {{--
-    Logika: Sembunyikan Navbar jika:
-    1. Berada di halaman login (Route login)
-    2. Berada di halaman register (Route register)
-    3. Berada di dalam prefix admin (URL mengandung /admin)
+    {{-- 
+        Logika yang lebih ketat: 
+        1. Cek Route Name (admin.*) - paling aman untuk Breeze/Jetstream
+        2. Cek URL Path (admin*) - untuk URL manual
+        3. Cek Login/Register
     --}}
-    @unless(Route::is('login') || Route::is('register') || request()->is('admin*'))
+    @php
+        $isAdminArea = request()->routeIs('admin.*') || request()->is('admin*');
+        $isAuthPage = request()->routeIs('login') || request()->routeIs('register');
+    @endphp
+
+    @if(!$isAdminArea && !$isAuthPage)
         @include('layouts.navbar')
-    @endunless
+    @endif
 
     <main class="fade-in min-h-screen">
-        {{-- Mendukung komponen x-app-layout (Breeze) --}}
-        @if(isset($slot))
+        @isset($slot)
             {{ $slot }}
-        @endif
+        @endisset
 
-        {{-- Mendukung @section('content') (Blade standar) --}}
         @yield('content')
     </main>
 
-    {{--
-    Logika: Sembunyikan Footer jika:
-    1. Berada di halaman login
-    2. Berada di halaman register
-    3. Berada di dalam prefix admin
-    --}}
-    @unless(Route::is('login') || Route::is('register') || request()->is('admin*'))
+    @if(!$isAdminArea && !$isAuthPage)
         @include('layouts.footer')
-    @endunless
+    @endif
 
     @stack('scripts')
 </body>
