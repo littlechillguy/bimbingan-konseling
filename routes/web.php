@@ -10,32 +10,23 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| 1. Redirect Root 
+| Public Routes
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
-    return redirect()->route('home');
-});
+    return view('home');
+})->name('home');
+Route::get('/layanan', function () {
+    return view('layanan');
+})->name('layanan');
 
 /*
 |--------------------------------------------------------------------------
 | 2. BK SYSTEM GROUP (Semua diawali /bk)
 |--------------------------------------------------------------------------
 */
-Route::prefix('bk')->group(function () {
-
-    /* --- Public Routes --- */
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
-
-    Route::get('/layanan', function () {
-        return view('layanan');
-    })->name('layanan');
-
-
-    /* --- Authenticated Student Routes (Siswa) --- */
-    Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::prefix('layanan')->name('layanan.')->group(function () {
             
@@ -79,9 +70,12 @@ Route::prefix('bk')->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-
-    /* --- Admin BK Routes --- */
-    Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Admin BK Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
 
         // Dashboard Admin
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
@@ -124,23 +118,4 @@ Route::prefix('bk')->group(function () {
         Route::delete('/chat/{id}', [AdminController::class, 'chatDestroy'])->name('chat.delete');
     });
 
-});
-
-/*
-|--------------------------------------------------------------------------
-| 3. Auth Routes & Dashboard Fix 
-|--------------------------------------------------------------------------
-*/
 require __DIR__ . '/auth.php';
-
-/**
- * SOLUSI ERROR REDIRECT:
- * Menambahkan alias route 'dashboard' agar Laravel tidak error 
- * saat mencoba mengalihkan user setelah registrasi.
- */
-Route::get('/dashboard', function () {
-    if (auth()->user() && auth()->user()->is_admin) {
-        return redirect()->route('admin.dashboard');
-    }
-    return redirect()->route('home');
-})->middleware(['auth'])->name('dashboard');
